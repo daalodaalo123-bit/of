@@ -41,11 +41,11 @@ export default function Appointments() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="mb-6 lg:mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="w-full max-w-7xl mx-auto">
+      <div className="mb-3 sm:mb-4 lg:mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-2xl lg:text-4xl font-semibold text-gray-900 mb-2 tracking-tight">Appointments</h1>
-          <p className="text-gray-500 text-sm lg:text-lg">Schedule and manage appointments.</p>
+          <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-gray-900 mb-1 sm:mb-2 tracking-tight">Appointments</h1>
+          <p className="text-gray-500 text-xs sm:text-sm lg:text-lg hidden sm:block">Schedule and manage appointments.</p>
         </div>
         <button
           onClick={() => {

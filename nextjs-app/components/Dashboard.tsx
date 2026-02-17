@@ -61,31 +61,31 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
 
   return (
     <div className="w-full max-w-7xl mx-auto">
-      <div className="mb-4 sm:mb-6 lg:mb-10">
-        <h1 className="text-xl sm:text-2xl lg:text-4xl font-semibold text-gray-900 mb-1 sm:mb-2 tracking-tight">Dashboard</h1>
-        <p className="text-gray-500 text-xs sm:text-sm lg:text-lg">Welcome back. Here's what's happening today.</p>
+      <div className="mb-3 sm:mb-4 lg:mb-10">
+        <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-gray-900 mb-1 tracking-tight">Dashboard</h1>
+        <p className="text-gray-500 text-xs sm:text-sm lg:text-lg hidden sm:block">Welcome back. Here's what's happening today.</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6 lg:mb-8">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 lg:gap-4 mb-3 sm:mb-4 lg:mb-8">
         {statCards.map((card, index) => (
           <div
             key={index}
-            className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200"
+            className="bg-white rounded-lg sm:rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200"
           >
-            <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center text-lg sm:text-xl shadow-sm`}>
+            <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
+              <div className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br ${card.color} rounded-lg sm:rounded-xl flex items-center justify-center text-base sm:text-lg lg:text-xl shadow-sm`}>
                 {card.icon}
               </div>
             </div>
-            <div className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 mb-1">{card.value}</div>
-            <div className="text-xs sm:text-sm text-gray-500 font-medium">{card.label}</div>
+            <div className="text-lg sm:text-xl lg:text-3xl font-semibold text-gray-900 mb-0.5 sm:mb-1">{card.value}</div>
+            <div className="text-[10px] sm:text-xs lg:text-sm text-gray-500 font-medium leading-tight">{card.label}</div>
           </div>
         ))}
       </div>
 
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-4 lg:p-6 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-lg lg:text-xl font-semibold text-gray-900">Today's Appointments</h2>
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div className="p-3 sm:p-4 lg:p-6 border-b border-gray-100 flex items-center justify-between">
+          <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900">Today's Appointments</h2>
           <button
             onClick={() => {
               onRefresh()
@@ -98,27 +98,27 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
             </svg>
           </button>
         </div>
-        <div className="p-4 lg:p-6">
+        <div className="p-3 sm:p-4 lg:p-6">
           {todayAppointments.length === 0 ? (
-            <div className="text-center py-12 lg:py-16">
-              <div className="text-4xl lg:text-5xl mb-4">📅</div>
-              <h3 className="text-base lg:text-lg font-semibold text-gray-900 mb-2">No appointments today</h3>
-              <p className="text-sm lg:text-base text-gray-500">All clear for today.</p>
+            <div className="text-center py-8 sm:py-12 lg:py-16">
+              <div className="text-3xl sm:text-4xl lg:text-5xl mb-3 sm:mb-4">📅</div>
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-gray-900 mb-1 sm:mb-2">No appointments today</h3>
+              <p className="text-xs sm:text-sm lg:text-base text-gray-500">All clear for today.</p>
             </div>
           ) : (
-            <div className="space-y-2 lg:space-y-3">
+            <div className="space-y-2 sm:space-y-2 lg:space-y-3">
               {todayAppointments.map((apt: any) => (
                 <div
                   key={apt.id}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 lg:p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-200 gap-2"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2.5 sm:p-3 lg:p-4 bg-gray-50 rounded-lg sm:rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-200 gap-2"
                 >
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-sm lg:text-base text-gray-900 mb-1">{apt.patientName}</h3>
-                    <p className="text-xs lg:text-sm text-gray-500">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-xs sm:text-sm lg:text-base text-gray-900 mb-0.5 sm:mb-1 truncate">{apt.patientName}</h3>
+                    <p className="text-[10px] sm:text-xs lg:text-sm text-gray-500 truncate">
                       {new Date(apt.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {apt.timeSlot}
                     </p>
                   </div>
-                  <span className={`px-2 lg:px-3 py-1 rounded-full text-xs font-medium self-start sm:self-auto ${
+                  <span className={`px-2 sm:px-2 lg:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium self-start sm:self-auto whitespace-nowrap ${
                     apt.status === 'scheduled' ? 'bg-blue-50 text-blue-600' :
                     apt.status === 'completed' ? 'bg-green-50 text-green-600' :
                     'bg-red-50 text-red-600'
