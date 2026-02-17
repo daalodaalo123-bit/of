@@ -61,9 +61,15 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
       const method = patient?.id ? 'PUT' : 'POST'
 
       const payload = {
-        ...formData,
-        id: patient?.id || `patient-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
         dateOfBirth: new Date(formData.dateOfBirth).toISOString(),
+        gender: formData.gender,
+        address: formData.address.trim(),
+        medicalHistory: formData.medicalHistory?.trim() || null,
+        allergies: formData.allergies?.trim() || null,
+        id: patient?.id || `patient-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         createdAt: patient?.id ? undefined : new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       }
