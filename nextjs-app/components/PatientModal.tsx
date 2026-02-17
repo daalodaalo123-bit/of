@@ -41,16 +41,28 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
     }
   }, [patient])
 
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError(null)
+    setLoading(true)
 
     try {
+      // Validate date
+      if (!formData.dateOfBirth) {
+        setError('Date of Birth is required')
+        setLoading(false)
+        return
+      }
+
       const url = patient?.id ? `/api/patients/${patient.id}` : '/api/patients'
       const method = patient?.id ? 'PUT' : 'POST'
 
       const payload = {
         ...formData,
-        id: patient?.id || `patient-${Date.now()}`,
+        id: patient?.id || `patient-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         dateOfBirth: new Date(formData.dateOfBirth).toISOString(),
         createdAt: patient?.id ? undefined : new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -62,12 +74,20 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
         body: JSON.stringify(payload),
       })
 
-      if (res.ok) {
-        onSave()
-        onClose()
+      const data = await res.json()
+
+      if (!res.ok) {
+        setError(data.error || 'Failed to save patient')
+        setLoading(false)
+        return
       }
-    } catch (error) {
+
+      onSave()
+      onClose()
+    } catch (error: any) {
       console.error('Failed to save patient:', error)
+      setError(error.message || 'An unexpected error occurred')
+      setLoading(false)
     }
   }
 
@@ -207,9 +227,10 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
             </button>
             <button
               type="submit"
-              className="flex-1 px-5 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium shadow-sm"
+              disabled={loading}
+              className="flex-1 px-5 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Save Patient
+              {loading ? 'Saving...' : 'Save Patient'}
             </button>
           </div>
         </form>

@@ -32,16 +32,23 @@ async function connectDB() {
       dbName: 'fod-clinic', // Explicitly set database name
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      console.log('✅ MongoDB Connected to database:', mongoose.connection.db?.databaseName || 'fod-clinic');
-      return mongoose;
-    });
+    cached.promise = mongoose.connect(MONGODB_URI, opts)
+      .then((mongoose) => {
+        console.log('✅ MongoDB Connected to database:', mongoose.connection.db?.databaseName || 'fod-clinic');
+        return mongoose;
+      })
+      .catch((error) => {
+        console.error('❌ MongoDB Connection Error:', error.message);
+        cached.promise = null;
+        throw new Error(`MongoDB connection failed: ${error.message}`);
+      });
   }
 
   try {
     cached.conn = await cached.promise;
-  } catch (e) {
+  } catch (e: any) {
     cached.promise = null;
+    console.error('❌ MongoDB Connection Error:', e.message);
     throw e;
   }
 
