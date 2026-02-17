@@ -60,25 +60,25 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
   ]
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <div className="mb-6 lg:mb-10">
-        <h1 className="text-2xl lg:text-4xl font-semibold text-gray-900 mb-2 tracking-tight">Dashboard</h1>
-        <p className="text-gray-500 text-sm lg:text-lg">Welcome back. Here's what's happening today.</p>
+    <div className="w-full max-w-7xl mx-auto">
+      <div className="mb-4 sm:mb-6 lg:mb-10">
+        <h1 className="text-xl sm:text-2xl lg:text-4xl font-semibold text-gray-900 mb-1 sm:mb-2 tracking-tight">Dashboard</h1>
+        <p className="text-gray-500 text-xs sm:text-sm lg:text-lg">Welcome back. Here's what's happening today.</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 lg:mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-4 sm:mb-6 lg:mb-8">
         {statCards.map((card, index) => (
           <div
             key={index}
-            className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200"
+            className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 hover:shadow-md transition-all duration-200"
           >
-            <div className="flex items-center justify-between mb-4">
-              <div className={`w-12 h-12 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center text-xl shadow-sm`}>
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br ${card.color} rounded-xl flex items-center justify-center text-lg sm:text-xl shadow-sm`}>
                 {card.icon}
               </div>
             </div>
-            <div className="text-2xl lg:text-3xl font-semibold text-gray-900 mb-1">{card.value}</div>
-            <div className="text-xs lg:text-sm text-gray-500 font-medium">{card.label}</div>
+            <div className="text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 mb-1">{card.value}</div>
+            <div className="text-xs sm:text-sm text-gray-500 font-medium">{card.label}</div>
           </div>
         ))}
       </div>

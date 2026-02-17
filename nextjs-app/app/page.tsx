@@ -11,7 +11,7 @@ import AuthGuard from '@/components/AuthGuard'
 export default function Home() {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState('dashboard')
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false) // Start closed on mobile
   const [stats, setStats] = useState({
     patientCount: 0,
     appointmentCount: 0,
@@ -59,9 +59,9 @@ export default function Home() {
           isOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
-        <main className="flex-1 lg:ml-64 transition-all duration-300">
+        <main className="flex-1 w-full lg:ml-64 transition-all duration-300">
           {/* Mobile Header */}
-          <div className="lg:hidden bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-40">
+          <div className="lg:hidden bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-40 shadow-sm">
             <button
               onClick={() => setSidebarOpen(true)}
               className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
@@ -82,13 +82,13 @@ export default function Home() {
           {/* Mobile Sidebar Overlay */}
           {sidebarOpen && (
             <div 
-              className="lg:hidden fixed inset-0 bg-black/50 z-50"
+              className="lg:hidden fixed inset-0 bg-black/50 z-[60]"
               onClick={() => setSidebarOpen(false)}
             />
           )}
 
-          {/* Content */}
-          <div className="p-4 lg:p-8">
+          {/* Content - Full width on mobile */}
+          <div className="w-full p-4 lg:p-8">
             {activeTab === 'dashboard' && <Dashboard stats={stats} onRefresh={loadStats} />}
             {activeTab === 'patients' && <Patients />}
             {activeTab === 'appointments' && <Appointments />}

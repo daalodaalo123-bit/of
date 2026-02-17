@@ -10,7 +10,7 @@ interface SidebarProps {
   onClose?: () => void
 }
 
-export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen = true, onClose }: SidebarProps) {
+export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen = false, onClose }: SidebarProps) {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'patients', label: 'Patients', icon: '👥' },
@@ -19,10 +19,11 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen = tr
 
   return (
     <aside className={`
-      fixed left-0 top-0 h-full w-64 bg-white/80 backdrop-blur-xl border-r border-gray-200/50 flex flex-col z-50
+      fixed left-0 top-0 h-full w-64 bg-white/95 backdrop-blur-xl border-r border-gray-200/50 flex flex-col
       transform transition-transform duration-300 ease-in-out
-      lg:translate-x-0
-      ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+      lg:translate-x-0 lg:z-50
+      z-[70]
+      ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
     `}>
       <div className="p-6 lg:p-8 border-b border-gray-200/50 flex items-center justify-between">
         <div className="flex items-center gap-3">
