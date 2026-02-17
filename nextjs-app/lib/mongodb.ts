@@ -29,10 +29,11 @@ async function connectDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      dbName: 'fod-clinic', // Explicitly set database name
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      console.log('✅ MongoDB Connected');
+      console.log('✅ MongoDB Connected to database:', mongoose.connection.db?.databaseName || 'fod-clinic');
       return mongoose;
     });
   }
