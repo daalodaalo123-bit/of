@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>HealthCare</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="patients">
+                    <i class="fas fa-users"></i>
+                    <span>Patients</span>
+                </a>
+                <a href="#" class="nav-item" data-tab="appointments">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Appointments</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">Admin User</div>
+                        <div class="user-role">Administrator</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Welcome back! Here's what's happening today.</p>
+                </div>
+                <div class="header-right">
+                    <div class="status-indicator">
+                        <span class="status-dot online"></span>
+                        <span>System Online</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboard" class="tab-content active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon patients">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="stat-patients">0</div>
+                            <div class="stat-label">Total Patients</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon appointments">
+                            <i class="fas fa-calendar"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="stat-appointments">0</div>
+                            <div class="stat-label">Scheduled</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon today">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="stat-today">0</div>
+                            <div class="stat-label">Today's Appointments</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon revenue">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="stat-value" id="stat-revenue">$0</div>
+                            <div class="stat-label">Total Revenue</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Today's Appointments</h2>
+                            <button class="btn-icon" onclick="loadDashboard()">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="card-body">
+                            <div id="today-appointments-list" class="appointments-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Patients Tab -->
+            <div id="patients" class="tab-content">
+                <div class="page-header">
+                    <div>
+                        <h1>Patient Management</h1>
+                        <p>Manage patient records and information</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openPatientModal()">
+                        <i class="fas fa-plus"></i> Add Patient
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="patient-search" placeholder="Search patients..." oninput="filterPatients()">
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="patients-list" class="patients-grid"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Tab -->
+            <div id="appointments" class="tab-content">
+                <div class="page-header">
+                    <div>
+                        <h1>Appointment Management</h1>
+                        <p>Schedule and manage appointments</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAppointmentModal()">
+                        <i class="fas fa-plus"></i> Schedule Appointment
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="calendar-view">
+                        <div class="calendar-header">
+                            <button class="btn-icon" onclick="changeMonth(-1)">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <h2 id="current-month"></h2>
+                            <button class="btn-icon" onclick="changeMonth(1)">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div id="calendar-grid" class="calendar-grid"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h2>All Appointments</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="appointments-list" class="appointments-list"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Patient Modal -->
+    <div id="patient-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="patient-modal-title">Add New Patient</h2>
+                <button class="btn-icon" onclick="closePatientModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="patient-form" onsubmit="savePatient(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="patient-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="patient-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone *</label>
+                        <input type="tel" id="patient-phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date of Birth *</label>
+                        <input type="date" id="patient-dob" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender *</label>
+                        <select id="patient-gender" required>
+                            <option value="">Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Address *</label>
+                        <textarea id="patient-address" rows="2" required></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Medical History</label>
+                        <textarea id="patient-history" rows="3"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Allergies</label>
+                        <textarea id="patient-allergies" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closePatientModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Patient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Appointment Modal -->
+    <div id="appointment-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Schedule Appointment</h2>
+                <button class="btn-icon" onclick="closeAppointmentModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="appointment-form" onsubmit="saveAppointment(event)">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Patient Name *</label>
+                        <input type="text" id="appointment-patient-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Patient ID *</label>
+                        <input type="text" id="appointment-patient-id" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date *</label>
+                        <input type="date" id="appointment-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time *</label>
+                        <input type="time" id="appointment-time" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Time Slot *</label>
+                        <input type="text" id="appointment-time-slot" placeholder="e.g., 10:00 AM" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Status *</label>
+                        <select id="appointment-status" required>
+                            <option value="scheduled">Scheduled</option>
+                            <option value="completed">Completed</option>
+                            <option value="cancelled">Cancelled</option>
+                            <option value="no_show">No Show</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Treatment Type</label>
+                        <input type="text" id="appointment-treatment">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Notes</label>
+                        <textarea id="appointment-notes" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeAppointmentModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Schedule Appointment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
