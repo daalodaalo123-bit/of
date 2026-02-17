@@ -98,10 +98,10 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <div className="p-8 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white">
-          <h2 className="text-2xl font-semibold text-gray-900">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="p-4 sm:p-6 lg:p-8 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
             {patient ? 'Edit Patient' : 'Add New Patient'}
           </h2>
           <button
@@ -185,7 +185,7 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
               </select>
             </div>
 
-            <div className="md:col-span-2">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Address *
               </label>
@@ -194,11 +194,11 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
                 rows={2}
                 value={formData.address}
                 onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white resize-none"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white resize-none text-sm sm:text-base"
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Medical History
               </label>
@@ -206,11 +206,11 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
                 rows={3}
                 value={formData.medicalHistory || ''}
                 onChange={(e) => setFormData({ ...formData, medicalHistory: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white resize-none"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white resize-none text-sm sm:text-base"
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Allergies
               </label>
@@ -218,12 +218,12 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
                 rows={2}
                 value={formData.allergies || ''}
                 onChange={(e) => setFormData({ ...formData, allergies: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white resize-none"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white resize-none text-sm sm:text-base"
               />
             </div>
           </div>
 
-          <div className="flex gap-3 pt-6 border-t border-gray-100">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t border-gray-100">
             <button
               type="button"
               onClick={onClose}

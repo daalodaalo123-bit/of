@@ -11,6 +11,7 @@ import AuthGuard from '@/components/AuthGuard'
 export default function Home() {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState('dashboard')
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [stats, setStats] = useState({
     patientCount: 0,
     appointmentCount: 0,
@@ -43,14 +44,55 @@ export default function Home() {
     router.refresh()
   }
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab)
+    setSidebarOpen(false) // Close sidebar on mobile when tab changes
+  }
+
   return (
     <AuthGuard>
       <div className="flex min-h-screen bg-gray-50">
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} onLogout={handleLogout} />
-        <main className="flex-1 ml-64">
-          {activeTab === 'dashboard' && <Dashboard stats={stats} onRefresh={loadStats} />}
-          {activeTab === 'patients' && <Patients />}
-          {activeTab === 'appointments' && <Appointments />}
+        <Sidebar 
+          activeTab={activeTab} 
+          setActiveTab={handleTabChange} 
+          onLogout={handleLogout}
+          isOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
+        <main className="flex-1 lg:ml-64 transition-all duration-300">
+          {/* Mobile Header */}
+          <div className="lg:hidden bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-40">
+            <button
+              onClick={() => setSidebarOpen(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors"
+            >
+              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white text-sm font-semibold">
+                F
+              </div>
+              <span className="text-lg font-semibold text-gray-900">FOD Clinic</span>
+            </div>
+            <div className="w-10"></div>
+          </div>
+
+          {/* Mobile Sidebar Overlay */}
+          {sidebarOpen && (
+            <div 
+              className="lg:hidden fixed inset-0 bg-black/50 z-50"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+
+          {/* Content */}
+          <div className="p-4 lg:p-8">
+            {activeTab === 'dashboard' && <Dashboard stats={stats} onRefresh={loadStats} />}
+            {activeTab === 'patients' && <Patients />}
+            {activeTab === 'appointments' && <Appointments />}
+          </div>
         </main>
       </div>
     </AuthGuard>

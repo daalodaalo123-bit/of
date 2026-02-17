@@ -60,13 +60,13 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
   ]
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <div className="mb-10">
-        <h1 className="text-4xl font-semibold text-gray-900 mb-2 tracking-tight">Dashboard</h1>
-        <p className="text-gray-500 text-lg">Welcome back. Here's what's happening today.</p>
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-6 lg:mb-10">
+        <h1 className="text-2xl lg:text-4xl font-semibold text-gray-900 mb-2 tracking-tight">Dashboard</h1>
+        <p className="text-gray-500 text-sm lg:text-lg">Welcome back. Here's what's happening today.</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 lg:mb-8">
         {statCards.map((card, index) => (
           <div
             key={index}
@@ -77,15 +77,15 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                 {card.icon}
               </div>
             </div>
-            <div className="text-3xl font-semibold text-gray-900 mb-1">{card.value}</div>
-            <div className="text-sm text-gray-500 font-medium">{card.label}</div>
+            <div className="text-2xl lg:text-3xl font-semibold text-gray-900 mb-1">{card.value}</div>
+            <div className="text-xs lg:text-sm text-gray-500 font-medium">{card.label}</div>
           </div>
         ))}
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">Today's Appointments</h2>
+        <div className="p-4 lg:p-6 border-b border-gray-100 flex items-center justify-between">
+          <h2 className="text-lg lg:text-xl font-semibold text-gray-900">Today's Appointments</h2>
           <button
             onClick={() => {
               onRefresh()
@@ -98,27 +98,27 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
             </svg>
           </button>
         </div>
-        <div className="p-6">
+        <div className="p-4 lg:p-6">
           {todayAppointments.length === 0 ? (
-            <div className="text-center py-16">
-              <div className="text-5xl mb-4">📅</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No appointments today</h3>
-              <p className="text-gray-500">All clear for today.</p>
+            <div className="text-center py-12 lg:py-16">
+              <div className="text-4xl lg:text-5xl mb-4">📅</div>
+              <h3 className="text-base lg:text-lg font-semibold text-gray-900 mb-2">No appointments today</h3>
+              <p className="text-sm lg:text-base text-gray-500">All clear for today.</p>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2 lg:space-y-3">
               {todayAppointments.map((apt: any) => (
                 <div
                   key={apt.id}
-                  className="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-200"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 lg:p-4 bg-gray-50 rounded-xl border border-gray-100 hover:border-gray-200 transition-all duration-200 gap-2"
                 >
-                  <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">{apt.patientName}</h3>
-                    <p className="text-sm text-gray-500">
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-sm lg:text-base text-gray-900 mb-1">{apt.patientName}</h3>
+                    <p className="text-xs lg:text-sm text-gray-500">
                       {new Date(apt.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {apt.timeSlot}
                     </p>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                  <span className={`px-2 lg:px-3 py-1 rounded-full text-xs font-medium self-start sm:self-auto ${
                     apt.status === 'scheduled' ? 'bg-blue-50 text-blue-600' :
                     apt.status === 'completed' ? 'bg-green-50 text-green-600' :
                     'bg-red-50 text-red-600'

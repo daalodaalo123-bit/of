@@ -162,10 +162,10 @@ export default function AppointmentModal({ appointment, onClose, onSave }: Appoi
   }
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-        <div className="p-8 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white">
-          <h2 className="text-2xl font-semibold text-gray-900">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="p-4 sm:p-6 lg:p-8 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+          <h2 className="text-xl sm:text-2xl font-semibold text-gray-900">
             {appointment ? 'Edit Appointment' : 'Schedule New Appointment'}
           </h2>
           <button
@@ -178,8 +178,8 @@ export default function AppointmentModal({ appointment, onClose, onSave }: Appoi
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 lg:p-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 mb-4 sm:mb-6">
             <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Patient Name *
@@ -195,7 +195,7 @@ export default function AppointmentModal({ appointment, onClose, onSave }: Appoi
                     setShowPatientList(true)
                   }
                 }}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
                 placeholder="Enter patient name"
               />
               
