@@ -237,7 +237,7 @@ export default function AppointmentModal({ appointment, onClose, onSave }: Appoi
                 required
                 value={formData.patientId}
                 onChange={(e) => setFormData({ ...formData, patientId: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
                 placeholder="Enter patient ID"
               />
             </div>
@@ -299,7 +299,7 @@ export default function AppointmentModal({ appointment, onClose, onSave }: Appoi
               </select>
             </div>
 
-            <div className="md:col-span-2">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Treatment Type
               </label>
@@ -307,12 +307,13 @@ export default function AppointmentModal({ appointment, onClose, onSave }: Appoi
                 type="text"
                 value={formData.treatmentType || ''}
                 onChange={(e) => setFormData({ ...formData, treatmentType: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white text-sm sm:text-base"
                 placeholder="e.g., General Checkup, Consultation"
               />
             </div>
 
-            <div className="md:col-span-2">
+            <div className="sm:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Notes
               </label>
@@ -320,13 +321,13 @@ export default function AppointmentModal({ appointment, onClose, onSave }: Appoi
                 rows={3}
                 value={formData.notes || ''}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white resize-none"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white resize-none text-sm sm:text-base"
                 placeholder="Additional notes or instructions..."
               />
             </div>
           </div>
 
-          <div className="flex gap-3 pt-6 border-t border-gray-100">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t border-gray-100">
             <button
               type="button"
               onClick={onClose}
