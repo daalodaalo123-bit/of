@@ -4,18 +4,32 @@ import Patient from '@/models/Patient'
 
 export async function GET() {
   try {
-    await connectDB()
+    console.log('🔍 Connecting to MongoDB...')
+    const conn = await connectDB()
+    console.log('✅ MongoDB connected, database:', conn.connection.db?.databaseName)
+    
+    console.log('🔍 Fetching patients...')
     const patients = await Patient.find().sort({ createdAt: -1 })
+    console.log(`✅ Found ${patients.length} patients`)
+    
     return NextResponse.json(patients)
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    console.error('❌ Error in GET /api/patients:', error)
+    return NextResponse.json({ 
+      error: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    }, { status: 500 })
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    await connectDB()
+    console.log('🔍 POST /api/patients - Connecting to MongoDB...')
+    const conn = await connectDB()
+    console.log('✅ MongoDB connected, database:', conn.connection.db?.databaseName)
+    
     const body = await request.json()
+    console.log('📝 Received patient data:', { name: body.name, email: body.email })
     
     // Validate required fields
     if (!body.name || !body.email || !body.phone || !body.dateOfBirth || !body.gender || !body.address) {

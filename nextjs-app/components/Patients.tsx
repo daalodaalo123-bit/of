@@ -22,18 +22,29 @@ export default function Patients() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
   const [isImportOpen, setIsImportOpen] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     loadPatients()
   }, [])
 
   const loadPatients = async () => {
+    setLoading(true)
+    setError(null)
     try {
       const res = await fetch('/api/patients')
+      if (!res.ok) {
+        const data = await res.json()
+        throw new Error(data.error || 'Failed to load patients')
+      }
       const data = await res.json()
       setPatients(data)
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load patients:', error)
+      setError(error.message || 'Failed to load patients. Please check your connection.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -117,7 +128,7 @@ export default function Patients() {
                 {searchTerm ? 'Try a different search term' : 'Add your first patient to get started'}
               </p>
             </div>
-          ) : (
+          ) : !loading && !error ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredPatients.map((patient) => (
                 <div
@@ -172,7 +183,7 @@ export default function Patients() {
                 </div>
               ))}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 
