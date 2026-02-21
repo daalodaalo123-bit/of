@@ -10,6 +10,9 @@ export interface IPatient extends Document {
   address: string;
   medicalHistory?: string;
   allergies?: string;
+  doctorId?: string;
+  doctorName?: string;
+  totalDue?: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,6 +27,9 @@ const PatientSchema: Schema = new Schema({
   address: { type: String, required: true },
   medicalHistory: { type: String, default: null },
   allergies: { type: String, default: null },
+  doctorId: { type: String, default: null },
+  doctorName: { type: String, default: null },
+  totalDue: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 }, {

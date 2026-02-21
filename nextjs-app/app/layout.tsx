@@ -7,11 +7,6 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'FOD Clinic Management System',
   description: 'Modern clinic management system for FOD Clinic with patient and appointment management',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-  },
 }
 
 export default function RootLayout({

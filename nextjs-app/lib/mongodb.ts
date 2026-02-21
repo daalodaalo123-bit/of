@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGODB_URI!;
 
 if (!MONGODB_URI) {
   const error = 'MONGODB_URI environment variable is not defined!';
@@ -8,8 +8,6 @@ if (!MONGODB_URI) {
   console.error('Please set MONGODB_URI in your environment variables');
   throw new Error(error);
 }
-
-console.log('🔗 MongoDB URI configured:', MONGODB_URI.substring(0, 20) + '...' + MONGODB_URI.substring(MONGODB_URI.length - 20));
 
 interface MongooseCache {
   conn: typeof mongoose | null;

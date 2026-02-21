@@ -5,7 +5,9 @@ import { useRouter } from 'next/navigation'
 import Sidebar from '@/components/Sidebar'
 import Dashboard from '@/components/Dashboard'
 import Patients from '@/components/Patients'
+import Doctors from '@/components/Doctors'
 import Appointments from '@/components/Appointments'
+import Payments from '@/components/Payments'
 import AuthGuard from '@/components/AuthGuard'
 
 export default function Home() {
@@ -91,7 +93,9 @@ export default function Home() {
           <div className="w-full p-2 sm:p-4 lg:p-8 overflow-x-hidden">
             {activeTab === 'dashboard' && <Dashboard stats={stats} onRefresh={loadStats} />}
             {activeTab === 'patients' && <Patients />}
+            {activeTab === 'doctors' && <Doctors />}
             {activeTab === 'appointments' && <Appointments />}
+            {activeTab === 'payments' && <Payments />}
           </div>
         </main>
       </div>

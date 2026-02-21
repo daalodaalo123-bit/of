@@ -4,11 +4,12 @@ import connectDB from '@/lib/mongodb'
 export async function GET() {
   try {
     const conn = await connectDB()
-    const dbName = conn.connection.db?.databaseName || 'unknown'
+    const db = conn.connection.db
+    const dbName = db?.databaseName || 'unknown'
     const readyState = conn.connection.readyState
     
     // Test query
-    const collections = await conn.connection.db.listCollections().toArray()
+    const collections = db ? await db.listCollections().toArray() : []
     
     return NextResponse.json({
       success: true,

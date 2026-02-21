@@ -12,6 +12,9 @@ interface Patient {
   address: string
   medicalHistory?: string
   allergies?: string
+  doctorId?: string
+  doctorName?: string
+  totalDue?: number
 }
 
 interface PatientModalProps {
@@ -30,13 +33,29 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
     address: '',
     medicalHistory: '',
     allergies: '',
+    doctorId: '',
+    doctorName: '',
+    totalDue: 0,
   })
+  const [doctors, setDoctors] = useState<{ id: string; name: string }[]>([])
+
+  useEffect(() => {
+    fetch('/api/doctors').then(async (r) => {
+      if (r.ok) {
+        const d = await r.json()
+        setDoctors(d.map((x: any) => ({ id: x.id, name: x.name })))
+      }
+    })
+  }, [])
 
   useEffect(() => {
     if (patient) {
       setFormData({
         ...patient,
         dateOfBirth: patient.dateOfBirth ? new Date(patient.dateOfBirth).toISOString().split('T')[0] : '',
+        doctorId: patient.doctorId || '',
+        doctorName: patient.doctorName || '',
+        totalDue: patient.totalDue ?? 0,
       })
     }
   }, [patient])
@@ -60,6 +79,7 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
       const url = patient?.id ? `/api/patients/${patient.id}` : '/api/patients'
       const method = patient?.id ? 'PUT' : 'POST'
 
+      const selectedDoctor = doctors.find((d) => d.id === formData.doctorId)
       const payload = {
         name: formData.name.trim(),
         email: formData.email.trim(),
@@ -69,6 +89,9 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
         address: formData.address.trim(),
         medicalHistory: formData.medicalHistory?.trim() || null,
         allergies: formData.allergies?.trim() || null,
+        doctorId: formData.doctorId || null,
+        doctorName: selectedDoctor?.name || null,
+        totalDue: Number(formData.totalDue) || 0,
         id: patient?.id || `patient-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         createdAt: patient?.id ? undefined : new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -183,6 +206,39 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Doctor
+              </label>
+              <select
+                value={formData.doctorId || ''}
+                onChange={(e) => {
+                  const d = doctors.find((x) => x.id === e.target.value)
+                  setFormData({ ...formData, doctorId: e.target.value, doctorName: d?.name || '' })
+                }}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white"
+              >
+                <option value="">No doctor assigned</option>
+                {doctors.map((d) => (
+                  <option key={d.id} value={d.id}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Total Due ($)
+              </label>
+              <input
+                type="number"
+                step="0.01"
+                min="0"
+                value={formData.totalDue ?? ''}
+                onChange={(e) => setFormData({ ...formData, totalDue: Number(e.target.value) || 0 })}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white"
+              />
             </div>
 
             <div className="sm:col-span-2">
