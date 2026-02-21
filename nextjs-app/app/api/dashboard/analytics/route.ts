@@ -4,6 +4,8 @@ import Patient from '@/models/Patient'
 import Appointment from '@/models/Appointment'
 import Payment from '@/models/Payment'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     await connectDB()

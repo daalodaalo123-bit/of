@@ -5,6 +5,8 @@ import Appointment from '@/models/Appointment'
 import Payment from '@/models/Payment'
 import Expense from '@/models/Expense'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     await connectDB()

@@ -1,13 +1,7 @@
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI!;
-
-if (!MONGODB_URI) {
-  const error = 'MONGODB_URI environment variable is not defined!';
-  console.error('❌', error);
-  console.error('Please set MONGODB_URI in your environment variables');
-  throw new Error(error);
-}
+// Don't throw at module load - Vercel build may run without env vars
+// Error will be thrown when connectDB() is actually called at runtime
 
 interface MongooseCache {
   conn: typeof mongoose | null;
@@ -25,6 +19,11 @@ if (!global.mongoose) {
 }
 
 async function connectDB() {
+  const MONGODB_URI = process.env.MONGODB_URI;
+  if (!MONGODB_URI) {
+    throw new Error('MONGODB_URI environment variable is not defined. Set it in Vercel Environment Variables.');
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
