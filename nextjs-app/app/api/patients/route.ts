@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import Patient from '@/models/Patient'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     console.log('🔍 Connecting to MongoDB...')

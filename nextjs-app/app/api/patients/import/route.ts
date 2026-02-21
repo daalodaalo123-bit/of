@@ -3,6 +3,8 @@ import connectDB from '@/lib/mongodb'
 import Patient from '@/models/Patient'
 import * as XLSX from 'xlsx'
 
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     await connectDB()
