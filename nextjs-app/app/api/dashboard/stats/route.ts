@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import Patient from '@/models/Patient'
 import Appointment from '@/models/Appointment'
+import Payment from '@/models/Payment'
+import Expense from '@/models/Expense'
 
 export async function GET() {
   try {
@@ -22,13 +24,19 @@ export async function GET() {
       status: 'scheduled',
     })
 
+    const payments = await Payment.find({}).lean()
+    const totalRevenue = payments.reduce((sum: number, p: any) => sum + (p.amountPaid || 0), 0)
+
+    const expenses = await Expense.find({}).lean()
+    const totalExpenses = expenses.reduce((sum: number, e: any) => sum + (e.amount || 0), 0)
+
     const stats = {
       patientCount,
       appointmentCount,
       todayAppointments,
-      totalRevenue: 0.0,
-      totalExpenses: 0.0,
-      profit: 0.0,
+      totalRevenue,
+      totalExpenses,
+      profit: totalRevenue - totalExpenses,
     }
 
     return NextResponse.json(stats)

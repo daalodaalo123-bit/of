@@ -3,6 +3,12 @@
 import { useState, useEffect } from 'react'
 import PaymentModal from './PaymentModal'
 
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  zaad: 'Zaad',
+  edahab: 'Edahab',
+  premier_bank: 'Premier Bank',
+}
+
 interface Payment {
   id: string
   patientId: string
@@ -10,6 +16,7 @@ interface Payment {
   totalAmount: number
   amountPaid: number
   remainingBalance: number
+  paymentMethod?: 'zaad' | 'edahab' | 'premier_bank'
   notes?: string
 }
 
@@ -92,6 +99,7 @@ export default function Payments() {
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Patient Name</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Total Amount Paid</th>
                 <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Remaining Balance</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Payment Method</th>
                 <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase">Actions</th>
               </tr>
             </thead>
@@ -101,6 +109,7 @@ export default function Payments() {
                   <td className="px-6 py-4 font-medium text-gray-900">{p.patientName}</td>
                   <td className="px-6 py-4 text-green-600 font-medium">${p.amountPaid.toFixed(2)}</td>
                   <td className="px-6 py-4 text-gray-600">${p.remainingBalance.toFixed(2)}</td>
+                  <td className="px-6 py-4 text-sm text-gray-600">{p.paymentMethod ? PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod : '-'}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <button onClick={() => { setSelectedPayment(p); setIsModalOpen(true) }} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-50 text-blue-600" title="Edit">
@@ -133,6 +142,9 @@ export default function Payments() {
                     <div className="font-medium text-gray-900 truncate">{p.patientName}</div>
                     <div className="text-xs text-green-600 mt-0.5">Paid: ${p.amountPaid.toFixed(2)}</div>
                     <div className="text-xs text-gray-500">Balance: ${p.remainingBalance.toFixed(2)}</div>
+                    {p.paymentMethod && (
+                      <div className="text-xs text-gray-600 mt-0.5">{PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod}</div>
+                    )}
                   </div>
                   <div className="flex gap-2 ml-2">
                     <button onClick={() => { setSelectedPayment(p); setIsModalOpen(true) }} className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600">

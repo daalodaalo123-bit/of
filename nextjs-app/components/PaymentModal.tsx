@@ -9,6 +9,7 @@ interface Payment {
   totalAmount: number
   amountPaid: number
   remainingBalance?: number
+  paymentMethod?: 'zaad' | 'edahab' | 'premier_bank'
   notes?: string
 }
 
@@ -25,6 +26,7 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
     patientName: '',
     totalAmount: 0,
     amountPaid: 0,
+    paymentMethod: undefined,
     notes: '',
   })
   const [error, setError] = useState<string | null>(null)
@@ -70,6 +72,7 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
         totalAmount,
         amountPaid,
         remainingBalance: totalAmount - amountPaid,
+        paymentMethod: formData.paymentMethod || null,
       }
       const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       const data = await res.json()
@@ -116,6 +119,19 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Amount Paid ($)</label>
               <input type="number" step="0.01" min="0" value={formData.amountPaid || ''} onChange={(e) => setFormData({ ...formData, amountPaid: Number(e.target.value) || 0 })} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
+              <select
+                value={formData.paymentMethod || ''}
+                onChange={(e) => setFormData({ ...formData, paymentMethod: (e.target.value || undefined) as any })}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+              >
+                <option value="">Select payment method</option>
+                <option value="zaad">Zaad</option>
+                <option value="edahab">Edahab</option>
+                <option value="premier_bank">Premier Bank</option>
+              </select>
             </div>
             <div className="p-3 bg-gray-50 rounded-xl">
               <span className="text-sm text-gray-600">Remaining Balance: </span>

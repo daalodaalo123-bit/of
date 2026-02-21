@@ -32,12 +32,12 @@ async function connectDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-      dbName: 'fod-clinic', // Explicitly set database name
+      dbName: 'healthcare_db', // Your existing data is in healthcare_db
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts)
       .then((mongoose) => {
-        console.log('✅ MongoDB Connected to database:', mongoose.connection.db?.databaseName || 'fod-clinic');
+        console.log('✅ MongoDB Connected to database:', mongoose.connection.db?.databaseName || 'healthcare_db');
         return mongoose;
       })
       .catch((error) => {

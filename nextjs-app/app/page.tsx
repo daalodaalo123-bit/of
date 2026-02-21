@@ -8,6 +8,7 @@ import Patients from '@/components/Patients'
 import Doctors from '@/components/Doctors'
 import Appointments from '@/components/Appointments'
 import Payments from '@/components/Payments'
+import Expenses from '@/components/Expenses'
 import AuthGuard from '@/components/AuthGuard'
 
 export default function Home() {
@@ -96,6 +97,7 @@ export default function Home() {
             {activeTab === 'doctors' && <Doctors />}
             {activeTab === 'appointments' && <Appointments />}
             {activeTab === 'payments' && <Payments />}
+            {activeTab === 'expenses' && <Expenses />}
           </div>
         </main>
       </div>

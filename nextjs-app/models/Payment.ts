@@ -7,6 +7,7 @@ export interface IPayment extends Document {
   totalAmount: number;
   amountPaid: number;
   remainingBalance: number;
+  paymentMethod?: 'zaad' | 'edahab' | 'premier_bank';
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -19,6 +20,7 @@ const PaymentSchema: Schema = new Schema({
   totalAmount: { type: Number, required: true, default: 0 },
   amountPaid: { type: Number, required: true, default: 0 },
   remainingBalance: { type: Number, required: true, default: 0 },
+  paymentMethod: { type: String, enum: ['zaad', 'edahab', 'premier_bank'], default: undefined },
   notes: { type: String, default: null },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
