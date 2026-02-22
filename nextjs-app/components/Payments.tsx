@@ -105,6 +105,7 @@ export default function Payments() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Patient</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Phone</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount Paid</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Balance</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Method</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -168,6 +169,7 @@ export default function Payments() {
                     <div className="text-xs text-gray-600 pl-7">{p.patientPhone || 'No phone'}</div>
                     <div className="flex gap-4 pl-7 text-xs">
                       <span className="text-green-600 font-medium">Paid: ${p.amountPaid.toFixed(2)}</span>
+                      <span className="text-gray-500">Balance: ${p.remainingBalance.toFixed(2)}</span>
                       {p.paymentMethod && (
                         <span className="text-gray-600">{PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod}</span>
                       )}
