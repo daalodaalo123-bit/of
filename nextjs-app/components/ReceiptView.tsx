@@ -44,7 +44,7 @@ export default function ReceiptView({ payment, onClose }: ReceiptViewProps) {
       }
     `
     document.head.appendChild(style)
-    return () => document.head.removeChild(style)
+    return () => { document.head.removeChild(style) }
   }, [])
 
   const date = payment.createdAt ? new Date(payment.createdAt).toLocaleString() : '—'
