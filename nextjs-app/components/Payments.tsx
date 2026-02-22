@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import PaymentModal from './PaymentModal'
+import PatientPaymentHistory from './PatientPaymentHistory'
+import ReceiptView from './ReceiptView'
 
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
   zaad: 'Zaad',
@@ -17,7 +19,7 @@ interface Payment {
   totalAmount: number
   amountPaid: number
   remainingBalance: number
-  paymentMethod?: 'zaad' | 'edahab' | 'premier_bank'
+  paymentMethod?: string
   notes?: string
 }
 
@@ -27,6 +29,8 @@ export default function Payments() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null)
   const [patients, setPatients] = useState<{ id: string; name: string }[]>([])
+  const [historyPatient, setHistoryPatient] = useState<{ id: string; name: string; phone?: string } | null>(null)
+  const [receiptPayment, setReceiptPayment] = useState<Payment | null>(null)
 
   useEffect(() => {
     loadPayments()
@@ -85,7 +89,7 @@ export default function Payments() {
             </div>
             <input
               type="text"
-              placeholder="Search payments by patient name..."
+              placeholder="Search by patient name or phone number..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm"
@@ -101,7 +105,6 @@ export default function Payments() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Patient</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Phone</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount Paid</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Balance</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Method</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
@@ -110,13 +113,22 @@ export default function Payments() {
               {payments.map((p, i) => (
                 <tr key={p.id} className="hover:bg-gray-50/80 transition-colors">
                   <td className="px-4 py-3 text-sm text-gray-400">{i + 1}</td>
-                  <td className="px-4 py-3 font-medium text-gray-900">{p.patientName}</td>
+                  <td className="px-4 py-3">
+                    <button
+                      onClick={() => setHistoryPatient({ id: p.patientId, name: p.patientName, phone: p.patientPhone })}
+                      className="font-medium text-blue-600 hover:text-blue-700 hover:underline text-left"
+                    >
+                      {p.patientName}
+                    </button>
+                  </td>
                   <td className="px-4 py-3 text-sm text-gray-600 tabular-nums">{p.patientPhone || '-'}</td>
                   <td className="px-4 py-3 text-right font-medium text-green-600 tabular-nums">${p.amountPaid.toFixed(2)}</td>
-                  <td className="px-4 py-3 text-right text-gray-600 tabular-nums">${p.remainingBalance.toFixed(2)}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{p.paymentMethod ? PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod : '-'}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
+                      <button onClick={() => setReceiptPayment(p)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-600" title="Download Receipt">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                      </button>
                       <button onClick={() => { setSelectedPayment(p); setIsModalOpen(true) }} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-50 text-blue-600" title="Edit">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                       </button>
@@ -146,18 +158,25 @@ export default function Payments() {
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-400 w-5">{i + 1}.</span>
-                      <span className="font-medium text-gray-900 truncate">{p.patientName}</span>
+                      <button
+                        onClick={() => setHistoryPatient({ id: p.patientId, name: p.patientName, phone: p.patientPhone })}
+                        className="font-medium text-blue-600 hover:underline truncate text-left"
+                      >
+                        {p.patientName}
+                      </button>
                     </div>
                     <div className="text-xs text-gray-600 pl-7">{p.patientPhone || 'No phone'}</div>
                     <div className="flex gap-4 pl-7 text-xs">
                       <span className="text-green-600 font-medium">Paid: ${p.amountPaid.toFixed(2)}</span>
-                      <span className="text-gray-500">Balance: ${p.remainingBalance.toFixed(2)}</span>
                       {p.paymentMethod && (
                         <span className="text-gray-600">{PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod}</span>
                       )}
                     </div>
                   </div>
                   <div className="flex gap-2 ml-2">
+                    <button onClick={() => setReceiptPayment(p)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600" title="Receipt">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                    </button>
                     <button onClick={() => { setSelectedPayment(p); setIsModalOpen(true) }} className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                     </button>
@@ -181,6 +200,23 @@ export default function Payments() {
           patients={patients}
           onClose={() => { setIsModalOpen(false); setSelectedPayment(null) }}
           onSave={loadPayments}
+        />
+      )}
+
+      {historyPatient && (
+        <PatientPaymentHistory
+          patientId={historyPatient.id}
+          patientName={historyPatient.name}
+          patientPhone={historyPatient.phone}
+          onClose={() => setHistoryPatient(null)}
+          onDownloadReceipt={(p) => { setHistoryPatient(null); setReceiptPayment(p as Payment) }}
+        />
+      )}
+
+      {receiptPayment && (
+        <ReceiptView
+          payment={receiptPayment}
+          onClose={() => setReceiptPayment(null)}
         />
       )}
     </div>

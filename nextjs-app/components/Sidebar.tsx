@@ -14,9 +14,9 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen = fa
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: '📊' },
     { id: 'patients', label: 'Patients', icon: '👥' },
+    { id: 'payments', label: 'Payments', icon: '💰' },
     { id: 'doctors', label: 'Doctors', icon: '👨‍⚕️' },
     { id: 'appointments', label: 'Appointments', icon: '📅' },
-    { id: 'payments', label: 'Payments', icon: '💰' },
     { id: 'expenses', label: 'Expenses', icon: '📋' },
   ]
 

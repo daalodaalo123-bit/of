@@ -10,10 +10,20 @@ export async function GET(request: NextRequest) {
     await connectDB()
     const { searchParams } = new URL(request.url)
     const search = searchParams.get('search')
+    const patientId = searchParams.get('patientId')
 
-    let query = {}
-    if (search && search.trim()) {
-      query = { patientName: { $regex: search.trim(), $options: 'i' } }
+    let query: Record<string, unknown> = {}
+    if (patientId && patientId.trim()) {
+      query = { patientId: patientId.trim() }
+    } else if (search && search.trim()) {
+      const term = search.trim()
+      const patientsByPhone = await Patient.find({ phone: { $regex: term, $options: 'i' } }).select('id').lean()
+      const patientIdsByPhone = (patientsByPhone as { id?: string }[]).map((p) => p.id).filter(Boolean) as string[]
+      const orConditions: Record<string, unknown>[] = [{ patientName: { $regex: term, $options: 'i' } }]
+      if (patientIdsByPhone.length > 0) {
+        orConditions.push({ patientId: { $in: patientIdsByPhone } })
+      }
+      query = { $or: orConditions }
     }
 
     const payments = await Payment.find(query).sort({ createdAt: -1 }).lean()

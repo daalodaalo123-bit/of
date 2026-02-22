@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 interface Payment {
   id?: string
@@ -9,7 +9,7 @@ interface Payment {
   totalAmount: number
   amountPaid: number
   remainingBalance?: number
-  paymentMethod?: 'zaad' | 'edahab' | 'premier_bank'
+  paymentMethod?: string
   notes?: string
 }
 
@@ -31,6 +31,22 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
   })
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [patientDropdownOpen, setPatientDropdownOpen] = useState(false)
+  const [patientSearch, setPatientSearch] = useState('')
+  const patientDropdownRef = useRef<HTMLDivElement>(null)
+  const filteredPatients = patients.filter((p) =>
+    p.name.toLowerCase().includes(patientSearch.toLowerCase().trim())
+  )
+
+  useEffect(() => {
+    const fn = (e: MouseEvent) => {
+      if (patientDropdownRef.current && !patientDropdownRef.current.contains(e.target as Node)) {
+        setPatientDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', fn)
+    return () => document.removeEventListener('mousedown', fn)
+  }, [])
 
   useEffect(() => {
     if (payment) {
@@ -52,9 +68,9 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
     }
   }, [payment, patients])
 
-  const handlePatientChange = (patientId: string) => {
-    const p = patients.find((x) => x.id === patientId)
-    if (p) setFormData({ ...formData, patientId: p.id, patientName: p.name })
+  const handlePatientSelect = (p: { id: string; name: string }) => {
+    setFormData((prev) => ({ ...prev, patientId: p.id, patientName: p.name }))
+    setPatientDropdownOpen(false)
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -98,19 +114,51 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
         <form onSubmit={handleSubmit} className="p-6">
           {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-xl text-sm">{error}</div>}
           <div className="space-y-4">
-            <div>
+            <div ref={patientDropdownRef} className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
-              <select
-                required
-                value={formData.patientId}
-                onChange={(e) => handlePatientChange(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+              <div
+                onClick={() => setPatientDropdownOpen((v: boolean) => !v)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent cursor-pointer flex items-center justify-between min-h-[44px] bg-white"
               >
-                <option value="">Select patient</option>
-                {patients.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
+                <span className={formData.patientName ? 'text-gray-900' : 'text-gray-400'}>
+                  {formData.patientName || 'Search and select patient...'}
+                </span>
+                <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+              {patientDropdownOpen && (
+                <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-hidden">
+                  <div className="p-2 border-b border-gray-100">
+                    <input
+                      type="text"
+                      placeholder="Search by name..."
+                      value={patientSearch}
+                      onChange={(e) => setPatientSearch(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                      autoFocus
+                    />
+                  </div>
+                  <div className="overflow-y-auto max-h-44">
+                    {filteredPatients.length === 0 ? (
+                      <div className="px-4 py-3 text-sm text-gray-500">No patients found</div>
+                    ) : (
+                      filteredPatients.map((p: { id: string; name: string }) => (
+                        <button
+                          key={p.id}
+                          type="button"
+                          onClick={() => handlePatientSelect(p)}
+                          className={`w-full px-4 py-2.5 text-left text-sm hover:bg-blue-50 transition-colors ${
+                            formData.patientId === p.id ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                          }`}
+                        >
+                          {p.name}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Total Amount ($)</label>
