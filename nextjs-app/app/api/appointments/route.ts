@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import connectDB from '@/lib/mongodb'
-import Appointment from '@/models/Appointment'
+import connectDB from '../../../lib/mongodb'
+import Appointment from '../../../models/Appointment'
 
 export const dynamic = 'force-dynamic'
 
