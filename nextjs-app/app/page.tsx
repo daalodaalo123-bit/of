@@ -9,6 +9,7 @@ import Doctors from '../components/Doctors'
 import Appointments from '../components/Appointments'
 import Payments from '../components/Payments'
 import Expenses from '../components/Expenses'
+import Reports from '../components/Reports'
 import AuthGuard from '../components/AuthGuard'
 
 export default function Home() {
@@ -98,6 +99,7 @@ export default function Home() {
             {activeTab === 'appointments' && <Appointments />}
             {activeTab === 'payments' && <Payments />}
             {activeTab === 'expenses' && <Expenses />}
+            {activeTab === 'reports' && <Reports />}
           </div>
         </main>
       </div>

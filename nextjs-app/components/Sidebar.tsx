@@ -18,6 +18,7 @@ export default function Sidebar({ activeTab, setActiveTab, onLogout, isOpen = fa
     { id: 'doctors', label: 'Doctors', icon: '👨‍⚕️' },
     { id: 'appointments', label: 'Appointments', icon: '📅' },
     { id: 'expenses', label: 'Expenses', icon: '📋' },
+    { id: 'reports', label: 'Reports', icon: '📈' },
   ]
 
   return (
