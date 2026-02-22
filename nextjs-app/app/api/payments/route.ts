@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import Payment from '@/models/Payment'
+import Patient from '@/models/Patient'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,8 +16,17 @@ export async function GET(request: NextRequest) {
       query = { patientName: { $regex: search.trim(), $options: 'i' } }
     }
 
-    const payments = await Payment.find(query).sort({ createdAt: -1 })
-    return NextResponse.json(payments)
+    const payments = await Payment.find(query).sort({ createdAt: -1 }).lean()
+    const patientIds = [...new Set(payments.map((p: any) => p.patientId))]
+    const patients = await Patient.find({ id: { $in: patientIds } }).select('id phone').lean()
+    const phoneMap = Object.fromEntries(patients.map((p: any) => [p.id, p.phone || '']))
+
+    const paymentsWithPhone = payments.map((p: any) => ({
+      ...p,
+      patientPhone: phoneMap[p.patientId] || '-',
+    }))
+
+    return NextResponse.json(paymentsWithPhone)
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }

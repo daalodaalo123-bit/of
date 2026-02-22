@@ -40,6 +40,7 @@ interface Analytics {
 export default function Dashboard({ stats, onRefresh }: DashboardProps) {
   const [todayAppointments, setTodayAppointments] = useState<any[]>([])
   const [analytics, setAnalytics] = useState<Analytics | null>(null)
+  const [showRevenueAmounts, setShowRevenueAmounts] = useState(true)
 
   useEffect(() => {
     loadTodayAppointments()
@@ -67,30 +68,10 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
   }
 
   const statCards = [
-    {
-      label: 'Total Patients',
-      value: stats.patientCount,
-      icon: '👥',
-      color: 'from-blue-500 to-blue-600',
-    },
-    {
-      label: 'Scheduled',
-      value: stats.appointmentCount,
-      icon: '📅',
-      color: 'from-green-500 to-green-600',
-    },
-    {
-      label: "Today's Appointments",
-      value: stats.todayAppointments,
-      icon: '⏰',
-      color: 'from-orange-500 to-orange-600',
-    },
-    {
-      label: 'Revenue',
-      value: `$${stats.totalRevenue.toLocaleString()}`,
-      icon: '💰',
-      color: 'from-purple-500 to-purple-600',
-    },
+    { label: 'Total Patients', value: stats.patientCount, icon: '👥', color: 'from-blue-500 to-blue-600', isRevenue: false },
+    { label: 'Scheduled', value: stats.appointmentCount, icon: '📅', color: 'from-green-500 to-green-600', isRevenue: false },
+    { label: "Today's Appointments", value: stats.todayAppointments, icon: '⏰', color: 'from-orange-500 to-orange-600', isRevenue: false },
+    { label: 'Revenue', value: `$${stats.totalRevenue.toLocaleString()}`, icon: '💰', color: 'from-purple-500 to-purple-600', isRevenue: true },
   ]
 
   return (
@@ -107,28 +88,56 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
             <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
             <div className="relative">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                  <span className="text-2xl">📈</span>
+              <div className="flex items-center justify-between gap-2 mb-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">📈</span>
+                  </div>
+                  <span className="text-white/90 text-sm font-medium">Revenue Insights</span>
                 </div>
-                <span className="text-white/90 text-sm font-medium">Revenue Insights</span>
+                <button
+                  onClick={() => setShowRevenueAmounts((v) => !v)}
+                  className="p-2 rounded-lg hover:bg-white/20 transition-colors text-white/80 hover:text-white"
+                  title={showRevenueAmounts ? 'Hide amounts' : 'Show amounts'}
+                >
+                  {showRevenueAmounts ? (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
               </div>
               <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
                 <div>
                   <p className="text-white/80 text-sm mb-1">This Month</p>
-                  <p className="text-3xl sm:text-4xl font-bold text-white">${analytics.revenueInsights.thisMonthRevenue.toLocaleString()}</p>
+                  <p className="text-3xl sm:text-4xl font-bold text-white">
+                    {showRevenueAmounts ? `$${analytics.revenueInsights.thisMonthRevenue.toLocaleString()}` : '••••••'}
+                  </p>
                   <div className="flex items-center gap-2 mt-2">
                     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
                       analytics.revenueInsights.changePct >= 0 ? 'bg-green-400/30 text-white' : 'bg-red-400/30 text-white'
                     }`}>
-                      {analytics.revenueInsights.changePct >= 0 ? '↑' : '↓'} {Math.abs(analytics.revenueInsights.changePct)}%
+                      {showRevenueAmounts ? (
+                        <>{analytics.revenueInsights.changePct >= 0 ? '↑' : '↓'} {Math.abs(analytics.revenueInsights.changePct)}%</>
+                      ) : (
+                        '•••'
+                      )}
                     </span>
-                    <span className="text-white/70 text-xs">vs last month (${analytics.revenueInsights.lastMonthRevenue.toLocaleString()})</span>
+                    <span className="text-white/70 text-xs">
+                      vs last month {showRevenueAmounts ? `($${analytics.revenueInsights.lastMonthRevenue.toLocaleString()})` : '(••••••)'}
+                    </span>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-white/60 text-xs">Last Month</p>
-                  <p className="text-xl font-semibold text-white/90">${analytics.revenueInsights.lastMonthRevenue.toLocaleString()}</p>
+                  <p className="text-xl font-semibold text-white/90">
+                    {showRevenueAmounts ? `$${analytics.revenueInsights.lastMonthRevenue.toLocaleString()}` : '••••••'}
+                  </p>
                 </div>
               </div>
             </div>
@@ -146,8 +155,28 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
               <div className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br ${card.color} rounded-lg sm:rounded-xl flex items-center justify-center text-base sm:text-lg lg:text-xl shadow-sm`}>
                 {card.icon}
               </div>
+              {card.isRevenue && (
+                <button
+                  onClick={() => setShowRevenueAmounts((v) => !v)}
+                  className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-400 hover:text-gray-600"
+                  title={showRevenueAmounts ? 'Hide amount' : 'Show amount'}
+                >
+                  {showRevenueAmounts ? (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  )}
+                </button>
+              )}
             </div>
-            <div className="text-lg sm:text-xl lg:text-3xl font-semibold text-gray-900 mb-0.5 sm:mb-1">{card.value}</div>
+            <div className="text-lg sm:text-xl lg:text-3xl font-semibold text-gray-900 mb-0.5 sm:mb-1">
+              {card.isRevenue && !showRevenueAmounts ? '••••••' : card.value}
+            </div>
             <div className="text-[10px] sm:text-xs lg:text-sm text-gray-500 font-medium leading-tight">{card.label}</div>
           </div>
         ))}
@@ -169,7 +198,9 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-3xl font-bold text-white">${(analytics?.outstandingBalances?.total || 0).toLocaleString()}</p>
+                <p className="text-3xl font-bold text-white">
+                  {showRevenueAmounts ? `$${(analytics?.outstandingBalances?.total || 0).toLocaleString()}` : '••••••'}
+                </p>
                 <p className="text-white/80 text-xs">{(analytics?.outstandingBalances?.count || 0)} patients</p>
               </div>
             </div>
@@ -262,7 +293,9 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                 const h = max > 0 ? (m.revenue / max) * 100 : 0
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[10px] sm:text-xs font-medium text-gray-600">${m.revenue}</span>
+                    <span className="text-[10px] sm:text-xs font-medium text-gray-600">
+                      {showRevenueAmounts ? `$${m.revenue}` : '••••'}
+                    </span>
                     <div className="w-full bg-gray-100 rounded-t-lg overflow-hidden" style={{ height: '80px' }}>
                       <div
                         className="w-full bg-gradient-to-t from-blue-500 to-blue-600 rounded-t-lg transition-all duration-500"
@@ -297,7 +330,7 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                   <div key={key}>
                     <div className="flex justify-between text-xs sm:text-sm mb-1">
                       <span className="text-gray-700">{label}</span>
-                      <span className="font-medium text-gray-900">${d.amount.toFixed(0)} ({d.count})</span>
+                      <span className="font-medium text-gray-900">{showRevenueAmounts ? `$${d.amount.toFixed(0)}` : '••••'} ({d.count})</span>
                     </div>
                     <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
                       <div

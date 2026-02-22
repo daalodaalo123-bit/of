@@ -13,6 +13,7 @@ interface Payment {
   id: string
   patientId: string
   patientName: string
+  patientPhone?: string
   totalAmount: number
   amountPaid: number
   remainingBalance: number
@@ -93,24 +94,28 @@ export default function Payments() {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="hidden lg:table w-full">
-            <thead className="bg-gray-50">
+          <table className="hidden lg:table w-full min-w-[640px]">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Patient Name</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Total Amount Paid</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Remaining Balance</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Payment Method</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase">Actions</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">#</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Patient</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Phone</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount Paid</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Balance</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Method</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {payments.map((p) => (
-                <tr key={p.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 font-medium text-gray-900">{p.patientName}</td>
-                  <td className="px-6 py-4 text-green-600 font-medium">${p.amountPaid.toFixed(2)}</td>
-                  <td className="px-6 py-4 text-gray-600">${p.remainingBalance.toFixed(2)}</td>
-                  <td className="px-6 py-4 text-sm text-gray-600">{p.paymentMethod ? PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod : '-'}</td>
-                  <td className="px-6 py-4 text-right">
+              {payments.map((p, i) => (
+                <tr key={p.id} className="hover:bg-gray-50/80 transition-colors">
+                  <td className="px-4 py-3 text-sm text-gray-400">{i + 1}</td>
+                  <td className="px-4 py-3 font-medium text-gray-900">{p.patientName}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600 tabular-nums">{p.patientPhone || '-'}</td>
+                  <td className="px-4 py-3 text-right font-medium text-green-600 tabular-nums">${p.amountPaid.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-right text-gray-600 tabular-nums">${p.remainingBalance.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{p.paymentMethod ? PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod : '-'}</td>
+                  <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
                       <button onClick={() => { setSelectedPayment(p); setIsModalOpen(true) }} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-50 text-blue-600" title="Edit">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
@@ -136,15 +141,21 @@ export default function Payments() {
                 <p className="text-sm">No payments yet. Add a payment.</p>
               </div>
             ) : (
-              payments.map((p) => (
-                <div key={p.id} className="p-4 flex items-center justify-between">
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-gray-900 truncate">{p.patientName}</div>
-                    <div className="text-xs text-green-600 mt-0.5">Paid: ${p.amountPaid.toFixed(2)}</div>
-                    <div className="text-xs text-gray-500">Balance: ${p.remainingBalance.toFixed(2)}</div>
-                    {p.paymentMethod && (
-                      <div className="text-xs text-gray-600 mt-0.5">{PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod}</div>
-                    )}
+              payments.map((p, i) => (
+                <div key={p.id} className="p-4 flex items-center justify-between border-b border-gray-100 last:border-0">
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-400 w-5">{i + 1}.</span>
+                      <span className="font-medium text-gray-900 truncate">{p.patientName}</span>
+                    </div>
+                    <div className="text-xs text-gray-600 pl-7">{p.patientPhone || 'No phone'}</div>
+                    <div className="flex gap-4 pl-7 text-xs">
+                      <span className="text-green-600 font-medium">Paid: ${p.amountPaid.toFixed(2)}</span>
+                      <span className="text-gray-500">Balance: ${p.remainingBalance.toFixed(2)}</span>
+                      {p.paymentMethod && (
+                        <span className="text-gray-600">{PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod}</span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex gap-2 ml-2">
                     <button onClick={() => { setSelectedPayment(p); setIsModalOpen(true) }} className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600">
