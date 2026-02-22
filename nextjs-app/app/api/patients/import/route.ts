@@ -44,23 +44,21 @@ export async function POST(request: NextRequest) {
         }
 
         // Validate required fields
-        if (!patientData.name || !patientData.email || !patientData.phone) {
-          errors.push(`Row ${imported + errors.length + 1}: Missing required fields`)
+        if (!patientData.name || !patientData.phone) {
+          errors.push(`Row ${imported + errors.length + 1}: Missing required fields (name, phone)`)
           continue
         }
 
-        // Convert date if it's a string
-        if (typeof patientData.dateOfBirth === 'string') {
-          patientData.dateOfBirth = new Date(patientData.dateOfBirth)
-        }
+        // Convert date if provided
+        patientData.dateOfBirth = patientData.dateOfBirth && String(patientData.dateOfBirth).trim()
+          ? new Date(patientData.dateOfBirth)
+          : null
+        patientData.email = patientData.email && String(patientData.email).trim() ? patientData.email.trim() : null
 
-        // Check if patient already exists
-        const existing = await Patient.findOne({ 
-          $or: [
-            { email: patientData.email },
-            { id: patientData.id }
-          ]
-        })
+        // Check if patient already exists (by email if provided)
+        const orConditions: { email?: string; id?: string }[] = [{ id: patientData.id }]
+        if (patientData.email) orConditions.push({ email: patientData.email })
+        const existing = await Patient.findOne({ $or: orConditions })
 
         if (existing) {
           errors.push(`Row ${imported + errors.length + 1}: Patient ${patientData.email} already exists`)

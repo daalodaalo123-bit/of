@@ -7,9 +7,9 @@ import ExcelImport from './ExcelImport'
 interface Patient {
   id: string
   name: string
-  email: string
+  email?: string
   phone: string
-  dateOfBirth: string
+  dateOfBirth?: string
   gender: string
   address: string
   medicalHistory?: string
@@ -54,7 +54,7 @@ export default function Patients() {
   const filteredPatients = patients.filter(
     (p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       p.phone.includes(searchTerm)
   )
 
@@ -150,7 +150,7 @@ export default function Patients() {
                       <tr key={patient.id} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="font-medium text-gray-900">{patient.name}</div>
-                          <div className="text-sm text-gray-500">{patient.email}</div>
+                          <div className="text-sm text-gray-500">{patient.email || '-'}</div>
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600">{patient.phone}</td>
                         <td className="px-6 py-4 text-sm text-gray-600">{patient.doctorName || '-'}</td>

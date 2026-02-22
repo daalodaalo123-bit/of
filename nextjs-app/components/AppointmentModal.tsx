@@ -16,7 +16,7 @@ interface Appointment {
 interface Patient {
   id: string
   name: string
-  email: string
+  email?: string
   phone: string
 }
 
@@ -63,7 +63,7 @@ export default function AppointmentModal({ appointment, onClose, onSave }: Appoi
     if (patientSearchTerm.length > 0) {
       const filtered = patients.filter(p =>
         p.name.toLowerCase().includes(patientSearchTerm.toLowerCase()) ||
-        p.email.toLowerCase().includes(patientSearchTerm.toLowerCase()) ||
+        (p.email || '').toLowerCase().includes(patientSearchTerm.toLowerCase()) ||
         p.phone.includes(patientSearchTerm)
       )
       setFilteredPatients(filtered)
@@ -218,7 +218,7 @@ export default function AppointmentModal({ appointment, onClose, onSave }: Appoi
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="font-semibold text-gray-900 truncate mb-0.5">{patient.name}</div>
-                          <div className="text-sm text-gray-500 truncate">{patient.email}</div>
+                          <div className="text-sm text-gray-500 truncate">{patient.email || '-'}</div>
                           <div className="text-xs text-gray-400 mt-0.5">{patient.phone}</div>
                         </div>
                       </div>

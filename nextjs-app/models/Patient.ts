@@ -3,9 +3,9 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IPatient extends Document {
   id: string;
   name: string;
-  email: string;
+  email?: string;
   phone: string;
-  dateOfBirth: Date;
+  dateOfBirth?: Date;
   gender: 'Male' | 'Female' | 'Other';
   address: string;
   medicalHistory?: string;
@@ -20,9 +20,9 @@ export interface IPatient extends Document {
 const PatientSchema: Schema = new Schema({
   id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
-  email: { type: String, required: true },
+  email: { type: String, required: false, default: null },
   phone: { type: String, required: true },
-  dateOfBirth: { type: Date, required: true },
+  dateOfBirth: { type: Date, required: false, default: null },
   gender: { type: String, required: true, enum: ['Male', 'Female', 'Other'] },
   address: { type: String, required: true },
   medicalHistory: { type: String, default: null },

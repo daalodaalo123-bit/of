@@ -5,9 +5,9 @@ import { useState, useEffect } from 'react'
 interface Patient {
   id?: string
   name: string
-  email: string
+  email?: string
   phone: string
-  dateOfBirth: string
+  dateOfBirth?: string
   gender: string
   address: string
   medicalHistory?: string
@@ -82,9 +82,9 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
       const selectedDoctor = doctors.find((d) => d.id === formData.doctorId)
       const payload = {
         name: formData.name.trim(),
-        email: formData.email.trim(),
+        email: formData.email?.trim() || null,
         phone: formData.phone.trim(),
-        dateOfBirth: new Date(formData.dateOfBirth).toISOString(),
+        dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString() : null,
         gender: formData.gender,
         address: formData.address.trim(),
         medicalHistory: formData.medicalHistory?.trim() || null,
@@ -180,11 +180,10 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date of Birth *
+                Date of Birth
               </label>
               <input
                 type="date"
-                required
                 value={formData.dateOfBirth}
                 onChange={(e) => setFormData({ ...formData, dateOfBirth: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white"

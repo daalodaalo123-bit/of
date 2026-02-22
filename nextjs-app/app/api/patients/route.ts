@@ -34,17 +34,16 @@ export async function POST(request: NextRequest) {
     console.log('📝 Received patient data:', { name: body.name, email: body.email })
     
     // Validate required fields
-    if (!body.name || !body.email || !body.phone || !body.dateOfBirth || !body.gender || !body.address) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    if (!body.name || !body.phone || !body.gender || !body.address) {
+      return NextResponse.json({ error: 'Missing required fields (name, phone, gender, address)' }, { status: 400 })
     }
 
-    // Check for existing patient by email or id
-    const existingPatient = await Patient.findOne({ 
-      $or: [
-        { id: body.id },
-        { email: body.email }
-      ]
-    })
+    // Check for existing patient by id or email (if email provided)
+    const orConditions: { id?: string; email?: string }[] = [{ id: body.id }]
+    if (body.email && body.email.trim()) {
+      orConditions.push({ email: body.email.trim() })
+    }
+    const existingPatient = await Patient.findOne({ $or: orConditions })
     
     if (existingPatient) {
       return NextResponse.json({ 
@@ -54,10 +53,10 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
-    // Ensure dateOfBirth is a Date object
     const patientData = {
       ...body,
-      dateOfBirth: new Date(body.dateOfBirth),
+      email: body.email?.trim() || null,
+      dateOfBirth: body.dateOfBirth ? new Date(body.dateOfBirth) : null,
       createdAt: body.createdAt ? new Date(body.createdAt) : new Date(),
       updatedAt: new Date(),
     }
