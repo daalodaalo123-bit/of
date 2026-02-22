@@ -17,6 +17,7 @@ interface Patient {
   doctorId?: string
   doctorName?: string
   totalDue?: number
+  remainingBalance?: number
 }
 
 export default function Patients() {
@@ -36,13 +37,22 @@ export default function Patients() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/patients')
-      if (!res.ok) {
-        const data = await res.json()
+      const [patientsRes, paymentsRes] = await Promise.all([
+        fetch('/api/patients'),
+        fetch('/api/payments')
+      ])
+      if (!patientsRes.ok) {
+        const data = await patientsRes.json()
         throw new Error(data.error || 'Failed to load patients')
       }
-      const data = await res.json()
-      setPatients(data)
+      const data = await patientsRes.json()
+      const payments = paymentsRes.ok ? await paymentsRes.json() : []
+      const balanceByPatient: Record<string, number> = {}
+      for (const p of payments) {
+        const bal = p.remainingBalance ?? 0
+        balanceByPatient[p.patientId] = (balanceByPatient[p.patientId] ?? 0) + bal
+      }
+      setPatients(data.map((pt: Patient) => ({ ...pt, remainingBalance: balanceByPatient[pt.id] ?? 0 })))
     } catch (error: any) {
       console.error('Failed to load patients:', error)
       setError(error.message || 'Failed to load patients. Please check your connection.')
@@ -141,6 +151,7 @@ export default function Patients() {
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Name</th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Phone</th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Doctor</th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase">Remaining Balance</th>
                       <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase">Total Due</th>
                       <th className="px-6 py-4 text-right text-xs font-semibold text-gray-600 uppercase">Actions</th>
                     </tr>
@@ -154,6 +165,7 @@ export default function Patients() {
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600">{patient.phone}</td>
                         <td className="px-6 py-4 text-sm text-gray-600">{patient.doctorName || '-'}</td>
+                        <td className="px-6 py-4 text-right text-sm font-medium tabular-nums text-gray-900">${(patient.remainingBalance ?? 0).toFixed(2)}</td>
                         <td className="px-6 py-4 text-sm font-medium text-gray-900">${(patient.totalDue || 0).toFixed(2)}</td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-2">
@@ -183,7 +195,12 @@ export default function Patients() {
                         <h3 className="font-semibold text-gray-900 truncate">{patient.name}</h3>
                         <p className="text-xs text-gray-500 truncate">{patient.phone}</p>
                         {patient.doctorName && <p className="text-xs text-gray-600 mt-0.5">Dr: {patient.doctorName}</p>}
-                        {(patient.totalDue || 0) > 0 && <p className="text-xs font-medium text-gray-900 mt-0.5">${patient.totalDue!.toFixed(2)} due</p>}
+                        {((patient.remainingBalance ?? 0) > 0 || (patient.totalDue ?? 0) > 0) && (
+                          <p className="text-xs font-medium text-gray-900 mt-0.5">
+                            Balance: ${(patient.remainingBalance ?? 0).toFixed(2)}
+                            {(patient.totalDue ?? 0) > 0 && ` · Due: $${patient.totalDue!.toFixed(2)}`}
+                          </p>
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-2 mt-2">

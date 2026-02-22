@@ -124,6 +124,7 @@ export default function Payments() {
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600 tabular-nums">{p.patientPhone || '-'}</td>
                   <td className="px-4 py-3 text-right font-medium text-green-600 tabular-nums">${p.amountPaid.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-right text-gray-600 tabular-nums">${(p.remainingBalance ?? 0).toFixed(2)}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">{p.paymentMethod ? PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod : '-'}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
