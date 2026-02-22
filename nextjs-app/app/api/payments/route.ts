@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     }
 
     const payments = await Payment.find(query).sort({ createdAt: -1 }).lean()
-    const patientIds = [...new Set(payments.map((p: any) => p.patientId))]
+    const patientIds = Array.from(new Set(payments.map((p: any) => p.patientId)))
     const patients = await Patient.find({ id: { $in: patientIds } }).select('id phone').lean()
     const phoneMap = Object.fromEntries(patients.map((p: any) => [p.id, p.phone || '']))
 

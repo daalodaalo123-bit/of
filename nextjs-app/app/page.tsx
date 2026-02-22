@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Sidebar from '@/components/Sidebar'
-import Dashboard from '@/components/Dashboard'
-import Patients from '@/components/Patients'
-import Doctors from '@/components/Doctors'
-import Appointments from '@/components/Appointments'
-import Payments from '@/components/Payments'
-import Expenses from '@/components/Expenses'
-import AuthGuard from '@/components/AuthGuard'
+import Sidebar from '../components/Sidebar'
+import Dashboard from '../components/Dashboard'
+import Patients from '../components/Patients'
+import Doctors from '../components/Doctors'
+import Appointments from '../components/Appointments'
+import Payments from '../components/Payments'
+import Expenses from '../components/Expenses'
+import AuthGuard from '../components/AuthGuard'
 
 export default function Home() {
   const router = useRouter()
