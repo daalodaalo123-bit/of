@@ -15,7 +15,7 @@ interface Payment {
 
 interface PaymentModalProps {
   payment: Payment | null
-  patients: { id: string; name: string }[]
+  patients: { id: string; name: string; totalDue?: number }[]
   initialPatient?: { id: string; name: string; phone?: string } | null
   onClose: () => void
   onSave: () => void
@@ -30,7 +30,6 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
     paymentMethod: undefined,
     notes: '',
   })
-  const [newTreatment, setNewTreatment] = useState(true)
   const [existingPayments, setExistingPayments] = useState<Payment[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -42,7 +41,7 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
   )
 
   const addToPaymentId = (() => {
-    if (newTreatment || !formData.patientId || existingPayments.length === 0) return null
+    if (!formData.patientId || existingPayments.length === 0) return null
     const withBalance = existingPayments.find((p) => (p.remainingBalance ?? 0) > 0)
     return (withBalance || existingPayments[0])?.id ?? null
   })()
@@ -66,30 +65,27 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
         amountPaid: payment.amountPaid,
         notes: payment.notes || '',
       })
-      setNewTreatment(true)
     } else if (initialPatient) {
       setFormData({
         patientId: initialPatient.id,
         patientName: initialPatient.name,
-        totalAmount: 0,
+        totalAmount: patients.find((p) => p.id === initialPatient.id)?.totalDue ?? 0,
         amountPaid: 0,
         notes: '',
       })
-      setNewTreatment(false)
     } else {
       setFormData({
         patientId: patients[0]?.id || '',
         patientName: patients[0]?.name || '',
-        totalAmount: 0,
+        totalAmount: patients[0]?.totalDue ?? 0,
         amountPaid: 0,
         notes: '',
       })
-      setNewTreatment(true)
     }
   }, [payment, patients, initialPatient])
 
   useEffect(() => {
-    if (!formData.patientId || newTreatment || payment) {
+    if (!formData.patientId || payment) {
       setExistingPayments([])
       return
     }
@@ -101,10 +97,11 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
       })
       .catch(() => { if (!cancelled) setExistingPayments([]) })
     return () => { cancelled = true }
-  }, [formData.patientId, newTreatment, payment])
+  }, [formData.patientId, payment])
 
-  const handlePatientSelect = (p: { id: string; name: string }) => {
-    setFormData((prev) => ({ ...prev, patientId: p.id, patientName: p.name }))
+  const handlePatientSelect = (p: { id: string; name: string; totalDue?: number }) => {
+    const patient = patients.find((x) => x.id === p.id)
+    setFormData((prev) => ({ ...prev, patientId: p.id, patientName: p.name, totalAmount: patient?.totalDue ?? 0 }))
     setPatientDropdownOpen(false)
   }
 
@@ -133,18 +130,19 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
       }
       const url = payment?.id ? `/api/payments/${payment.id}` : '/api/payments'
       const method = payment?.id ? 'PUT' : 'POST'
-      const totalAmount = Number(formData.totalAmount) || 0
+      const patientTotalDue = patients.find((p) => p.id === formData.patientId)?.totalDue ?? 0
+      const totalAmount = Number(formData.totalAmount) || Number(patientTotalDue) || 0
       const amount = Number(formData.amountPaid) || 0
       const payload = addToPaymentId ? undefined : {
         ...formData,
         id: payment?.id || `payment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         totalAmount,
         amountPaid: amount,
-        remainingBalance: totalAmount - amount,
+        remainingBalance: Math.max(0, totalAmount - amount),
         paymentMethod: formData.paymentMethod || null,
       }
       if (!payload && !addToPaymentId) {
-        setError('Select a patient or choose New treatment')
+        setError('Select a patient and enter an amount')
         setLoading(false)
         return
       }
@@ -162,25 +160,19 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
     }
   }
 
-  const isAddToExisting = !payment && !newTreatment && !!addToPaymentId
+  const isAddToExisting = !payment && !!addToPaymentId
   const remaining = (Number(formData.totalAmount) || 0) - (Number(formData.amountPaid) || 0)
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="p-6 border-b flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">{payment ? 'Edit Payment' : isAddToExisting ? 'Add to existing treatment' : 'Add Payment'}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{payment ? 'Edit Payment' : 'Add Payment'}</h2>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-6">
           {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-xl text-sm">{error}</div>}
           <div className="space-y-4">
-            {!payment && (
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={newTreatment} onChange={(e) => setNewTreatment(e.target.checked)} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                <span className="text-sm font-medium text-gray-700">New treatment (new bill)</span>
-              </label>
-            )}
             <div ref={patientDropdownRef} className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
               <div
@@ -229,14 +221,11 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
                 </div>
               )}
             </div>
-            {!payment && !newTreatment && formData.patientId && existingPayments.length === 0 && (
-              <p className="text-xs text-amber-600">No existing treatment for this patient. Check &quot;New treatment&quot; to create one.</p>
-            )}
-            {isAddToExisting && <p className="text-xs text-gray-500">This amount will be added to the existing treatment record.</p>}
-            {!isAddToExisting && (
+            {isAddToExisting && <p className="text-xs text-gray-500">This payment will be grouped under {formData.patientName}.</p>}
+            {!isAddToExisting && !payment && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Total Amount ($)</label>
-                <input type="number" step="0.01" min="0" value={formData.totalAmount || ''} onChange={(e) => setFormData({ ...formData, totalAmount: Number(e.target.value) || 0 })} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+                <input type="number" step="0.01" min="0" value={formData.totalAmount || ''} onChange={(e) => setFormData({ ...formData, totalAmount: Number(e.target.value) || 0 })} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" placeholder="From patient registration" />
               </div>
             )}
             <div>
