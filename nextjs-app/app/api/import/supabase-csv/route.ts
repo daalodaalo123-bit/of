@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No data rows found in file. Ensure the file has a header row and data.' }, { status: 400 })
     }
 
-    const forceImport = formData.get('forceImport') === 'true' || formData.get('forceImport') === true
+    const forceImport = formData.get('forceImport') === 'true'
 
     let patientsCreated = 0
     let paymentsCreated = 0
