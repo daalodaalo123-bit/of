@@ -22,6 +22,12 @@ export async function GET(
   }
 }
 
+function safeDate(val: unknown): Date | null {
+  if (val == null || val === '' || String(val).toLowerCase() === 'null') return null
+  const d = new Date(String(val))
+  return isNaN(d.getTime()) ? null : d
+}
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -30,6 +36,8 @@ export async function PUT(
     await connectDB()
     const body = await request.json()
     body.updatedAt = new Date()
+    if (body.dateOfBirth !== undefined) body.dateOfBirth = safeDate(body.dateOfBirth) ?? null
+    if (body.createdAt !== undefined) body.createdAt = safeDate(body.createdAt) ?? body.updatedAt
 
     const patient = await Patient.findOneAndUpdate(
       { id: params.id },

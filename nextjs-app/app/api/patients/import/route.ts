@@ -50,9 +50,13 @@ export async function POST(request: NextRequest) {
         }
 
         // Convert date if provided
-        patientData.dateOfBirth = patientData.dateOfBirth && String(patientData.dateOfBirth).trim()
-          ? new Date(patientData.dateOfBirth)
-          : null
+        const dateStr = patientData.dateOfBirth && String(patientData.dateOfBirth).trim()
+        if (dateStr) {
+          const d = new Date(dateStr)
+          patientData.dateOfBirth = isNaN(d.getTime()) ? null : d
+        } else {
+          patientData.dateOfBirth = null
+        }
         patientData.email = patientData.email && String(patientData.email).trim() ? patientData.email.trim() : null
 
         // Check if patient already exists (by email if provided)

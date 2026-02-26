@@ -53,11 +53,19 @@ export async function POST(request: NextRequest) {
       }, { status: 400 })
     }
 
+    const parseDate = (val: unknown): Date | null => {
+      if (!val) return null
+      const d = new Date(String(val))
+      return isNaN(d.getTime()) ? null : d
+    }
+    const dateOfBirth = parseDate(body.dateOfBirth)
+    const createdAt = parseDate(body.createdAt)
+
     const patientData = {
       ...body,
       email: body.email?.trim() || null,
-      dateOfBirth: body.dateOfBirth ? new Date(body.dateOfBirth) : null,
-      createdAt: body.createdAt ? new Date(body.createdAt) : new Date(),
+      dateOfBirth: dateOfBirth ?? null,
+      createdAt: createdAt ?? new Date(),
       updatedAt: new Date(),
     }
 

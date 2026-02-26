@@ -7,6 +7,12 @@ import * as XLSX from 'xlsx'
 export const dynamic = 'force-dynamic'
 export const maxDuration = 60
 
+function safeDate(val: unknown): Date | null {
+  if (val == null || val === '' || String(val).toLowerCase() === 'null') return null
+  const d = new Date(String(val))
+  return isNaN(d.getTime()) ? null : d
+}
+
 export async function POST(request: NextRequest) {
   try {
     await connectDB()
@@ -85,7 +91,7 @@ export async function POST(request: NextRequest) {
           name,
           email: row.email || row.Email ? String(row.email ?? row.Email).trim() : null,
           phone,
-          dateOfBirth: row.birth_date ?? row.birthDate ? new Date(String(row.birth_date ?? row.birthDate)) : null,
+          dateOfBirth: safeDate(row.birth_date ?? row.birthDate) ?? null,
           gender,
           address: String(row.address ?? row.Address ?? '-').trim() || '-',
           medicalHistory: row.condition ? String(row.condition).trim() : null,
@@ -93,7 +99,7 @@ export async function POST(request: NextRequest) {
           doctorId: row.doctor_id ?? row.doctorId ? String(row.doctor_id ?? row.doctorId).trim() : null,
           doctorName: null,
           totalDue: totalDueInitial,
-          createdAt: row.created_at ? new Date(String(row.created_at)) : new Date(),
+          createdAt: safeDate(row.created_at) ?? new Date(),
           updatedAt: new Date(),
         }
         patientsToInsert.push(patientDoc)
@@ -108,7 +114,7 @@ export async function POST(request: NextRequest) {
             amountPaid,
             remainingBalance: Math.max(0, totalDueInitial - amountPaid),
             transactions: amountPaid > 0 ? [{ amount: amountPaid, createdAt: new Date(), paymentMethod: undefined, notes: 'Imported from Supabase' }] : undefined,
-            createdAt: row.created_at ? new Date(String(row.created_at)) : new Date(),
+            createdAt: safeDate(row.created_at) ?? new Date(),
             updatedAt: new Date(),
           })
         }

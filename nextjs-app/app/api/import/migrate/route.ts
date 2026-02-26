@@ -8,6 +8,12 @@ export const dynamic = 'force-dynamic'
 
 const PAYMENT_METHODS = ['zaad', 'edahab', 'cash']
 
+function safeDate(val: unknown): Date | null {
+  if (val == null || val === '' || String(val).toLowerCase() === 'null') return null
+  const d = new Date(String(val))
+  return isNaN(d.getTime()) ? null : d
+}
+
 export async function POST(request: NextRequest) {
   try {
     await connectDB()
@@ -89,7 +95,7 @@ export async function POST(request: NextRequest) {
             remainingBalance: totalAmount - amountPaid,
             paymentMethod: paymentMethod || undefined,
             notes: notes ? String(notes) : null,
-            createdAt: paymentDate ? new Date(paymentDate) : new Date(),
+            createdAt: safeDate(paymentDate) ?? new Date(),
             updatedAt: new Date(),
           }).save()
           paymentsCreated++
