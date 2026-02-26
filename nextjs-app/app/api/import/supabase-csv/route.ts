@@ -34,8 +34,8 @@ export async function POST(request: NextRequest) {
     const existingIds = new Set<string>()
     const existingPhones = new Set<string>()
     if (!forceImport) {
-      const existing = await Patient.find({}).select('id phone').lean()
-      for (const p of existing as { id: string; phone: string }[]) {
+      const existing = (await Patient.find({}).select('id phone').lean()) as unknown as { id: string; phone?: string }[]
+      for (const p of existing) {
         existingIds.add(p.id)
         existingPhones.add(String(p.phone || '').trim())
       }
