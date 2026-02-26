@@ -8,7 +8,7 @@ import ReceiptView from './ReceiptView'
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
   zaad: 'Zaad',
   edahab: 'Edahab',
-  premier_bank: 'Premier Bank',
+  cash: 'Cash',
 }
 
 interface Payment {

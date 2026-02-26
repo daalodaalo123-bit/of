@@ -19,7 +19,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 const PAYMENT_METHOD_LABELS: Record<string, string> = {
   zaad: 'Zaad',
   edahab: 'Edahab',
-  premier_bank: 'Premier Bank',
+  cash: 'Cash',
   other: 'Other',
 }
 
@@ -78,16 +78,16 @@ export async function GET() {
     const pmTotals: Record<string, { count: number; amount: number }> = {
       zaad: { count: 0, amount: 0 },
       edahab: { count: 0, amount: 0 },
-      premier_bank: { count: 0, amount: 0 },
+      cash: { count: 0, amount: 0 },
       other: { count: 0, amount: 0 },
     }
     for (const p of allPayments) {
       const pm = (p as any).paymentMethod || 'other'
-      const key = pm === 'zaad' || pm === 'edahab' || pm === 'premier_bank' ? pm : 'other'
+      const key = pm === 'zaad' || pm === 'edahab' || pm === 'cash' || pm === 'premier_bank' ? (pm === 'premier_bank' ? 'cash' : pm) : 'other'
       pmTotals[key].count++
       pmTotals[key].amount += (p as any).amountPaid || 0
     }
-    for (const key of ['zaad', 'edahab', 'premier_bank', 'other']) {
+    for (const key of ['zaad', 'edahab', 'cash', 'other']) {
       paymentMethods.push({
         method: key,
         label: PAYMENT_METHOD_LABELS[key] || key,

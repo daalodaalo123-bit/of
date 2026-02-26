@@ -5,6 +5,7 @@ import Payment from '../../../../models/Payment'
 import * as XLSX from 'xlsx'
 
 export const dynamic = 'force-dynamic'
+export const maxDuration = 60
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,8 +31,18 @@ export async function POST(request: NextRequest) {
 
     const forceImport = formData.get('forceImport') === 'true'
 
-    let patientsCreated = 0
-    let paymentsCreated = 0
+    const existingIds = new Set<string>()
+    const existingPhones = new Set<string>()
+    if (!forceImport) {
+      const existing = await Patient.find({}).select('id phone').lean()
+      for (const p of existing as { id: string; phone: string }[]) {
+        existingIds.add(p.id)
+        existingPhones.add(String(p.phone || '').trim())
+      }
+    }
+
+    const patientsToInsert: Record<string, unknown>[] = []
+    const paymentsToInsert: Record<string, unknown>[] = []
     const errors: string[] = []
     const seenIds = new Set<string>()
 
@@ -50,17 +61,18 @@ export async function POST(request: NextRequest) {
         let useId = id && !seenIds.has(id) ? id : `patient-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`
 
         if (!forceImport) {
-          const existing = await Patient.findOne({ $or: [{ id: useId }, { phone }] })
-          if (existing) {
+          if (existingIds.has(useId) || existingPhones.has(phone)) {
             errors.push(`Row ${rowNum}: Patient ${name} (${phone}) already exists`)
             continue
           }
         } else {
-          while (seenIds.has(useId) || await Patient.findOne({ id: useId })) {
+          while (seenIds.has(useId) || existingIds.has(useId)) {
             useId = `patient-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`
           }
         }
         seenIds.add(useId)
+        existingIds.add(useId)
+        existingPhones.add(phone)
 
         const genderRaw = String(row.gender ?? row.Gender ?? 'Other').trim().toLowerCase()
         const gender = ['male', 'female'].includes(genderRaw) ? (genderRaw === 'male' ? 'Male' : 'Female') : 'Other'
@@ -68,7 +80,7 @@ export async function POST(request: NextRequest) {
         const totalDueInitial = Number(row.total_due_initial ?? row.totalDueInitial ?? 0) || 0
         const totalDue = Number(row.total_due ?? row.totalDue ?? totalDueInitial) || totalDueInitial
 
-        const patient = new Patient({
+        const patientDoc = {
           id: useId,
           name,
           email: row.email || row.Email ? String(row.email ?? row.Email).trim() : null,
@@ -83,13 +95,12 @@ export async function POST(request: NextRequest) {
           totalDue: totalDueInitial,
           createdAt: row.created_at ? new Date(String(row.created_at)) : new Date(),
           updatedAt: new Date(),
-        })
-        await patient.save()
-        patientsCreated++
+        }
+        patientsToInsert.push(patientDoc)
 
         const amountPaid = Math.max(0, totalDueInitial - totalDue)
         if (amountPaid > 0 || totalDueInitial > 0) {
-          await new Payment({
+          paymentsToInsert.push({
             id: `payment-${Date.now()}-${i}-${Math.random().toString(36).substr(2, 9)}`,
             patientId: useId,
             patientName: name,
@@ -99,19 +110,25 @@ export async function POST(request: NextRequest) {
             transactions: amountPaid > 0 ? [{ amount: amountPaid, createdAt: new Date(), paymentMethod: undefined, notes: 'Imported from Supabase' }] : undefined,
             createdAt: row.created_at ? new Date(String(row.created_at)) : new Date(),
             updatedAt: new Date(),
-          }).save()
-          paymentsCreated++
+          })
         }
       } catch (err: unknown) {
         errors.push(`Row ${rowNum}: ${err instanceof Error ? err.message : 'Unknown error'}`)
       }
     }
 
+    if (patientsToInsert.length > 0) {
+      await Patient.insertMany(patientsToInsert)
+    }
+    if (paymentsToInsert.length > 0) {
+      await Payment.insertMany(paymentsToInsert)
+    }
+
     return NextResponse.json({
-      patientsCreated,
-      paymentsCreated,
+      patientsCreated: patientsToInsert.length,
+      paymentsCreated: paymentsToInsert.length,
       errors: errors.length > 0 ? errors : undefined,
-      message: `Imported ${patientsCreated} patients and ${paymentsCreated} payments${errors.length > 0 ? ` (${errors.length} rows skipped)` : ''}`,
+      message: `Imported ${patientsToInsert.length} patients and ${paymentsToInsert.length} payments${errors.length > 0 ? ` (${errors.length} rows skipped)` : ''}`,
     })
   } catch (error: unknown) {
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Import failed' }, { status: 500 })

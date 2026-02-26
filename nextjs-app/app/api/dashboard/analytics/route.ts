@@ -39,7 +39,7 @@ export async function GET() {
     const paymentMethods = {
       zaad: { count: 0, amount: 0 },
       edahab: { count: 0, amount: 0 },
-      premier_bank: { count: 0, amount: 0 },
+      cash: { count: 0, amount: 0 },
       other: { count: 0, amount: 0 },
     }
     for (const p of allPayments) {
@@ -51,9 +51,9 @@ export async function GET() {
       } else if (pm === 'edahab') {
         paymentMethods.edahab.count++
         paymentMethods.edahab.amount += amt
-      } else if (pm === 'premier_bank') {
-        paymentMethods.premier_bank.count++
-        paymentMethods.premier_bank.amount += amt
+      } else if (pm === 'cash') {
+        paymentMethods.cash.count++
+        paymentMethods.cash.amount += amt
       } else {
         paymentMethods.other.count++
         paymentMethods.other.amount += amt

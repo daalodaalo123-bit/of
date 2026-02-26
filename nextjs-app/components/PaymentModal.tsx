@@ -242,7 +242,7 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
                 <option value="">Select payment method</option>
                 <option value="zaad">Zaad</option>
                 <option value="edahab">Edahab</option>
-                <option value="premier_bank">Premier Bank</option>
+                <option value="cash">Cash</option>
               </select>
             </div>
             {!isAddToExisting && (

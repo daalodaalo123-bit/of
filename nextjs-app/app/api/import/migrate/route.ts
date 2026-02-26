@@ -6,7 +6,7 @@ import * as XLSX from 'xlsx'
 
 export const dynamic = 'force-dynamic'
 
-const PAYMENT_METHODS = ['zaad', 'edahab', 'premier_bank']
+const PAYMENT_METHODS = ['zaad', 'edahab', 'cash']
 
 export async function POST(request: NextRequest) {
   try {
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
 
         if (hasPayment) {
           const methodRaw = (row.PaymentMethod ?? row['Payment Method'] ?? row.Method ?? row.method ?? '').toString().toLowerCase()
-          const paymentMethod = PAYMENT_METHODS.includes(methodRaw) ? methodRaw : (methodRaw === 'zaad' ? 'zaad' : methodRaw === 'edahab' ? 'edahab' : methodRaw === 'premier' || methodRaw === 'bank' ? 'premier_bank' : undefined)
+          const paymentMethod = PAYMENT_METHODS.includes(methodRaw) ? methodRaw : (methodRaw === 'zaad' ? 'zaad' : methodRaw === 'edahab' ? 'edahab' : methodRaw === 'cash' ? 'cash' : undefined)
           const paymentDate = row.PaymentDate ?? row['Payment Date'] ?? row.Date ?? row.date ?? new Date()
           const notes = row.Notes ?? row.notes ?? null
 
