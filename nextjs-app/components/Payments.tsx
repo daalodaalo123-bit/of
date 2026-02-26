@@ -27,6 +27,7 @@ interface GroupedPatient {
   patientId: string
   patientName: string
   patientPhone?: string
+  totalFromRegistration: number
   totalPaid: number
   totalBalance: number
   payments: Payment[]
@@ -38,19 +39,28 @@ export default function Payments() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null)
   const [addPaymentForPatient, setAddPaymentForPatient] = useState<{ id: string; name: string; phone?: string } | null>(null)
-  const [patients, setPatients] = useState<{ id: string; name: string }[]>([])
+  const [patients, setPatients] = useState<{ id: string; name: string; phone?: string; totalDue?: number }[]>([])
   const [historyPatient, setHistoryPatient] = useState<{ id: string; name: string; phone?: string } | null>(null)
   const [receiptPayment, setReceiptPayment] = useState<Payment | null>(null)
+
+  const patientById = useMemo(() => {
+    const m = new Map<string, { id: string; name: string; phone?: string; totalDue?: number }>()
+    for (const p of patients) m.set(p.id, p)
+    return m
+  }, [patients])
 
   const groupedByPatient = useMemo((): GroupedPatient[] => {
     const map = new Map<string, GroupedPatient>()
     for (const p of payments) {
       const key = p.patientId
       if (!map.has(key)) {
+        const patient = patientById.get(key)
+        const totalDue = patient?.totalDue != null ? Number(patient.totalDue) : undefined
         map.set(key, {
           patientId: p.patientId,
           patientName: p.patientName,
           patientPhone: p.patientPhone,
+          totalFromRegistration: totalDue ?? 0,
           totalPaid: 0,
           totalBalance: 0,
           payments: [],
@@ -58,11 +68,16 @@ export default function Payments() {
       }
       const g = map.get(key)!
       g.totalPaid += p.amountPaid ?? 0
-      g.totalBalance += p.remainingBalance ?? 0
       g.payments.push(p)
     }
-    return Array.from(map.values())
-  }, [payments])
+    const list = Array.from(map.values())
+    list.forEach((g) => {
+      g.totalBalance = g.totalFromRegistration >= 0
+        ? Math.max(0, g.totalFromRegistration - g.totalPaid)
+        : g.payments.reduce((s: number, p: Payment) => s + (p.remainingBalance ?? 0), 0)
+    })
+    return list
+  }, [payments, patientById])
 
   useEffect(() => {
     loadPayments()
@@ -84,7 +99,7 @@ export default function Payments() {
       const res = await fetch('/api/patients')
       if (res.ok) {
         const data = await res.json()
-        setPatients(data.map((p: any) => ({ id: p.id, name: p.name })))
+        setPatients(data.map((p: any) => ({ id: p.id, name: p.name, phone: p.phone, totalDue: p.totalDue })))
       }
     } catch (error) {
       console.error('Failed to load patients:', error)
@@ -136,10 +151,10 @@ export default function Payments() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">#</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Patient</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Phone</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Total (from registration)</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Amount Paid</th>
                 <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Balance</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Method</th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider w-28">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -157,9 +172,9 @@ export default function Payments() {
                     <span className="block text-xs text-gray-400 mt-0.5">Click to view payment history</span>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600 tabular-nums">{g.patientPhone || '-'}</td>
-                  <td className="px-4 py-3 text-right font-medium text-green-600 tabular-nums">${g.totalPaid.toFixed(2)}</td>
-                  <td className="px-4 py-3 text-right text-gray-600 tabular-nums">${g.totalBalance.toFixed(2)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">—</td>
+                  <td className="px-4 py-3 text-right text-gray-700 tabular-nums whitespace-nowrap">${g.totalFromRegistration.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-right font-medium text-green-600 tabular-nums whitespace-nowrap">${g.totalPaid.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-right font-medium tabular-nums whitespace-nowrap">{g.totalBalance > 0 ? <span className="text-amber-600">${g.totalBalance.toFixed(2)}</span> : <span className="text-gray-500">$0.00</span>}</td>
                   <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="flex justify-end gap-2">
                       <button
@@ -207,6 +222,7 @@ export default function Payments() {
                     <div className="text-xs text-gray-500 pl-7">Tap to view payment history</div>
                     <div className="text-xs text-gray-600 pl-7">{g.patientPhone || 'No phone'}</div>
                     <div className="flex gap-4 pl-7 text-xs">
+                      <span className="text-gray-700">Total: ${g.totalFromRegistration.toFixed(2)}</span>
                       <span className="text-green-600 font-medium">Paid: ${g.totalPaid.toFixed(2)}</span>
                       <span className="text-gray-500">Balance: ${g.totalBalance.toFixed(2)}</span>
                     </div>

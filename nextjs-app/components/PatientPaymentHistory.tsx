@@ -33,15 +33,25 @@ interface PatientPaymentHistoryProps {
 
 export default function PatientPaymentHistory({ patientId, patientName, patientPhone, onClose, onDownloadReceipt, onEditPayment, onDeletePayment }: PatientPaymentHistoryProps) {
   const [payments, setPayments] = useState<Payment[]>([])
+  const [patientTotalDue, setPatientTotalDue] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
   const load = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/payments?patientId=${encodeURIComponent(patientId)}`)
-      if (res.ok) {
-        const data = await res.json()
+      const [payRes, patientRes] = await Promise.all([
+        fetch(`/api/payments?patientId=${encodeURIComponent(patientId)}`),
+        fetch(`/api/patients/${encodeURIComponent(patientId)}`),
+      ])
+      if (payRes.ok) {
+        const data = await payRes.json()
         setPayments(data)
+      }
+      if (patientRes.ok) {
+        const patient = await patientRes.json()
+        setPatientTotalDue(patient.totalDue != null ? Number(patient.totalDue) : 0)
+      } else {
+        setPatientTotalDue(0)
       }
     } catch (e) {
       console.error('Failed to load payment history:', e)
@@ -55,8 +65,8 @@ export default function PatientPaymentHistory({ patientId, patientName, patientP
   }, [patientId])
 
   const totalPaid = payments.reduce((s, p) => s + p.amountPaid, 0)
-  const totalOwed = payments.length ? Math.max(...payments.map((p) => p.totalAmount || 0)) : 0
-  const remainingBalance = Math.max(0, totalOwed - totalPaid)
+  const totalFromRegistration = patientTotalDue != null ? patientTotalDue : (payments.length ? Math.max(...payments.map((p) => p.totalAmount || 0)) : 0)
+  const remainingBalance = Math.max(0, totalFromRegistration - totalPaid)
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[60] p-4" onClick={onClose}>
@@ -71,14 +81,14 @@ export default function PatientPaymentHistory({ patientId, patientName, patientP
         <div className="flex-1 overflow-y-auto p-6">
           {loading ? (
             <p className="text-gray-500 text-center py-8">Loading...</p>
-          ) : payments.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">No payments found for this patient.</p>
+          ) : payments.length === 0 && (patientTotalDue == null || patientTotalDue === 0) ? (
+            <p className="text-gray-500 text-center py-8">No payments or balance for this patient.</p>
           ) : (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="p-3 sm:p-4 rounded-xl bg-blue-50 border border-blue-100">
-                  <p className="text-xs font-medium text-blue-700 mb-1">Total Owed</p>
-                  <p className="text-lg sm:text-xl font-bold text-blue-800">${totalOwed.toFixed(2)}</p>
+                  <p className="text-xs font-medium text-blue-700 mb-1">Total (from registration)</p>
+                  <p className="text-lg sm:text-xl font-bold text-blue-800">${totalFromRegistration.toFixed(2)}</p>
                 </div>
                 <div className="p-3 sm:p-4 rounded-xl bg-green-50 border border-green-100">
                   <p className="text-xs font-medium text-green-700 mb-1">Total Paid</p>
