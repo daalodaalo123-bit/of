@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import PaymentModal from './PaymentModal'
 import PatientPaymentHistory from './PatientPaymentHistory'
 import ReceiptView from './ReceiptView'
@@ -23,14 +23,46 @@ interface Payment {
   notes?: string
 }
 
+interface GroupedPatient {
+  patientId: string
+  patientName: string
+  patientPhone?: string
+  totalPaid: number
+  totalBalance: number
+  payments: Payment[]
+}
+
 export default function Payments() {
   const [payments, setPayments] = useState<Payment[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedPayment, setSelectedPayment] = useState<Payment | null>(null)
+  const [addPaymentForPatient, setAddPaymentForPatient] = useState<{ id: string; name: string; phone?: string } | null>(null)
   const [patients, setPatients] = useState<{ id: string; name: string }[]>([])
   const [historyPatient, setHistoryPatient] = useState<{ id: string; name: string; phone?: string } | null>(null)
   const [receiptPayment, setReceiptPayment] = useState<Payment | null>(null)
+
+  const groupedByPatient = useMemo((): GroupedPatient[] => {
+    const map = new Map<string, GroupedPatient>()
+    for (const p of payments) {
+      const key = p.patientId
+      if (!map.has(key)) {
+        map.set(key, {
+          patientId: p.patientId,
+          patientName: p.patientName,
+          patientPhone: p.patientPhone,
+          totalPaid: 0,
+          totalBalance: 0,
+          payments: [],
+        })
+      }
+      const g = map.get(key)!
+      g.totalPaid += p.amountPaid ?? 0
+      g.totalBalance += p.remainingBalance ?? 0
+      g.payments.push(p)
+    }
+    return Array.from(map.values())
+  }, [payments])
 
   useEffect(() => {
     loadPayments()
@@ -72,7 +104,7 @@ export default function Payments() {
           <p className="text-gray-500 text-xs sm:text-sm lg:text-lg hidden sm:block">Track patient payments and balances.</p>
         </div>
         <button
-          onClick={() => { setSelectedPayment(null); setIsModalOpen(true) }}
+          onClick={() => { setSelectedPayment(null); setAddPaymentForPatient(null); setIsModalOpen(true) }}
           className="px-4 lg:px-5 py-2 lg:py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all duration-200 shadow-sm text-xs lg:text-sm self-start sm:self-auto"
         >
           + Add Payment
@@ -111,35 +143,38 @@ export default function Payments() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {payments.map((p, i) => (
-                <tr key={p.id} className="hover:bg-gray-50/80 transition-colors">
+              {groupedByPatient.map((g, i) => (
+                <tr
+                  key={g.patientId}
+                  className="hover:bg-gray-50/80 transition-colors cursor-pointer"
+                  onClick={() => setHistoryPatient({ id: g.patientId, name: g.patientName, phone: g.patientPhone })}
+                >
                   <td className="px-4 py-3 text-sm text-gray-400">{i + 1}</td>
                   <td className="px-4 py-3">
-                    <button
-                      onClick={() => setHistoryPatient({ id: p.patientId, name: p.patientName, phone: p.patientPhone })}
-                      className="font-medium text-blue-600 hover:text-blue-700 hover:underline text-left"
-                    >
-                      {p.patientName}
-                    </button>
+                    <span className="font-medium text-blue-600 hover:text-blue-700 hover:underline">
+                      {g.patientName}
+                    </span>
+                    <span className="block text-xs text-gray-400 mt-0.5">Click to view payment history</span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600 tabular-nums">{p.patientPhone || '-'}</td>
-                  <td className="px-4 py-3 text-right font-medium text-green-600 tabular-nums">${p.amountPaid.toFixed(2)}</td>
-                  <td className="px-4 py-3 text-right text-gray-600 tabular-nums">${(p.remainingBalance ?? 0).toFixed(2)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{p.paymentMethod ? PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod : '-'}</td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="px-4 py-3 text-sm text-gray-600 tabular-nums">{g.patientPhone || '-'}</td>
+                  <td className="px-4 py-3 text-right font-medium text-green-600 tabular-nums">${g.totalPaid.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-right text-gray-600 tabular-nums">${g.totalBalance.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-sm text-gray-600">—</td>
+                  <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="flex justify-end gap-2">
-                      <button onClick={() => setReceiptPayment(p)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-600" title="Download Receipt">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                      </button>
-                      <button onClick={() => { setSelectedPayment(p); setIsModalOpen(true) }} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-50 text-blue-600" title="Edit">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
+                      <button
+                        onClick={() => { setSelectedPayment(null); setAddPaymentForPatient({ id: g.patientId, name: g.patientName, phone: g.patientPhone }); setIsModalOpen(true) }}
+                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-50 text-blue-600"
+                        title="Add payment"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                       </button>
                       <button
-                        onClick={async () => { if (confirm('Delete this payment?')) { await fetch(`/api/payments/${p.id}`, { method: 'DELETE' }); loadPayments() } }}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 text-red-600"
-                        title="Delete"
+                        onClick={() => setHistoryPatient({ id: g.patientId, name: g.patientName, phone: g.patientPhone })}
+                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 text-gray-600"
+                        title="View history"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                       </button>
                     </div>
                   </td>
@@ -149,45 +184,39 @@ export default function Payments() {
           </table>
 
           <div className="lg:hidden divide-y divide-gray-100">
-            {payments.length === 0 ? (
+            {groupedByPatient.length === 0 ? (
               <div className="p-8 text-center text-gray-500">
                 <div className="text-4xl mb-2">💰</div>
                 <p className="text-sm">No payments yet. Add a payment.</p>
               </div>
             ) : (
-              payments.map((p, i) => (
-                <div key={p.id} className="p-4 flex items-center justify-between border-b border-gray-100 last:border-0">
+              groupedByPatient.map((g, i) => (
+                <div
+                  key={g.patientId}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setHistoryPatient({ id: g.patientId, name: g.patientName, phone: g.patientPhone })}
+                  onKeyDown={(e) => e.key === 'Enter' && setHistoryPatient({ id: g.patientId, name: g.patientName, phone: g.patientPhone })}
+                  className="p-4 flex items-center justify-between border-b border-gray-100 last:border-0 cursor-pointer hover:bg-gray-50 active:bg-gray-100"
+                >
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-gray-400 w-5">{i + 1}.</span>
-                      <button
-                        onClick={() => setHistoryPatient({ id: p.patientId, name: p.patientName, phone: p.patientPhone })}
-                        className="font-medium text-blue-600 hover:underline truncate text-left"
-                      >
-                        {p.patientName}
-                      </button>
+                      <span className="font-medium text-blue-600 truncate">{g.patientName}</span>
                     </div>
-                    <div className="text-xs text-gray-600 pl-7">{p.patientPhone || 'No phone'}</div>
+                    <div className="text-xs text-gray-500 pl-7">Tap to view payment history</div>
+                    <div className="text-xs text-gray-600 pl-7">{g.patientPhone || 'No phone'}</div>
                     <div className="flex gap-4 pl-7 text-xs">
-                      <span className="text-green-600 font-medium">Paid: ${p.amountPaid.toFixed(2)}</span>
-                      <span className="text-gray-500">Balance: ${p.remainingBalance.toFixed(2)}</span>
-                      {p.paymentMethod && (
-                        <span className="text-gray-600">{PAYMENT_METHOD_LABELS[p.paymentMethod] || p.paymentMethod}</span>
-                      )}
+                      <span className="text-green-600 font-medium">Paid: ${g.totalPaid.toFixed(2)}</span>
+                      <span className="text-gray-500">Balance: ${g.totalBalance.toFixed(2)}</span>
                     </div>
                   </div>
-                  <div className="flex gap-2 ml-2">
-                    <button onClick={() => setReceiptPayment(p)} className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600" title="Receipt">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  <div className="flex gap-2 ml-2" onClick={(e) => e.stopPropagation()}>
+                    <button onClick={() => { setSelectedPayment(null); setAddPaymentForPatient({ id: g.patientId, name: g.patientName, phone: g.patientPhone }); setIsModalOpen(true) }} className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600" title="Add payment">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                     </button>
-                    <button onClick={() => { setSelectedPayment(p); setIsModalOpen(true) }} className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                    </button>
-                    <button
-                      onClick={async () => { if (confirm('Delete?')) { await fetch(`/api/payments/${p.id}`, { method: 'DELETE' }); loadPayments() } }}
-                      className="w-8 h-8 flex items-center justify-center rounded-lg bg-red-50 text-red-600"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    <button onClick={() => setHistoryPatient({ id: g.patientId, name: g.patientName, phone: g.patientPhone })} className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 text-gray-600" title="View history">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                     </button>
                   </div>
                 </div>
@@ -201,7 +230,8 @@ export default function Payments() {
         <PaymentModal
           payment={selectedPayment}
           patients={patients}
-          onClose={() => { setIsModalOpen(false); setSelectedPayment(null) }}
+          initialPatient={addPaymentForPatient}
+          onClose={() => { setIsModalOpen(false); setSelectedPayment(null); setAddPaymentForPatient(null) }}
           onSave={loadPayments}
         />
       )}
@@ -213,6 +243,11 @@ export default function Payments() {
           patientPhone={historyPatient.phone}
           onClose={() => setHistoryPatient(null)}
           onDownloadReceipt={(p) => { setHistoryPatient(null); setReceiptPayment(p as Payment) }}
+          onEditPayment={(p) => { setHistoryPatient(null); setSelectedPayment(p as Payment); setAddPaymentForPatient(null); setIsModalOpen(true) }}
+          onDeletePayment={async (p) => {
+            await fetch(`/api/payments/${p.id}`, { method: 'DELETE' })
+            loadPayments()
+          }}
         />
       )}
 

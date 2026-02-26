@@ -5,7 +5,6 @@ import { useState, useEffect } from 'react'
 interface Patient {
   id?: string
   name: string
-  email?: string
   phone: string
   dateOfBirth?: string
   gender: string
@@ -26,7 +25,6 @@ interface PatientModalProps {
 export default function PatientModal({ patient, onClose, onSave }: PatientModalProps) {
   const [formData, setFormData] = useState<Patient>({
     name: '',
-    email: '',
     phone: '',
     dateOfBirth: '',
     gender: '',
@@ -82,7 +80,6 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
       const selectedDoctor = doctors.find((d) => d.id === formData.doctorId)
       const payload = {
         name: formData.name.trim(),
-        email: formData.email?.trim() || null,
         phone: formData.phone.trim(),
         dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString() : null,
         gender: formData.gender,
@@ -148,19 +145,6 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
                 required
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email *
-              </label>
-              <input
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white"
               />
             </div>

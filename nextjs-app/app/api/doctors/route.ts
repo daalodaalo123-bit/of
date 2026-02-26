@@ -19,12 +19,17 @@ export async function POST(request: NextRequest) {
     await connectDB()
     const body = await request.json()
 
-    if (!body.name || !body.email || !body.phone) {
-      return NextResponse.json({ error: 'Missing required fields (name, email, phone)' }, { status: 400 })
+    if (!body.name || !body.phone) {
+      return NextResponse.json({ error: 'Missing required fields (name, phone)' }, { status: 400 })
+    }
+
+    const orConditions: { id?: string; email?: string }[] = [{ id: body.id }]
+    if (body.email && body.email.trim()) {
+      orConditions.push({ email: body.email.trim() })
     }
 
     const existingDoctor = await Doctor.findOne({ 
-      $or: [{ id: body.id }, { email: body.email }]
+      $or: orConditions
     })
     
     if (existingDoctor) {
@@ -37,6 +42,7 @@ export async function POST(request: NextRequest) {
 
     const doctorData = {
       ...body,
+      email: body.email?.trim() || null,
       id: body.id || `doctor-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       createdAt: new Date(),
       updatedAt: new Date(),

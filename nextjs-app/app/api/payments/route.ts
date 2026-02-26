@@ -47,6 +47,44 @@ export async function POST(request: NextRequest) {
     await connectDB()
     const body = await request.json()
 
+    const addToPaymentId = body.addToPaymentId && String(body.addToPaymentId).trim()
+
+    if (addToPaymentId) {
+      const amount = Number(body.amountPaid) || Number(body.amount) || 0
+      if (amount <= 0) {
+        return NextResponse.json({ error: 'Amount must be greater than 0' }, { status: 400 })
+      }
+      const payment = await Payment.findOne({ id: addToPaymentId })
+      if (!payment) {
+        return NextResponse.json({ error: 'Payment record not found' }, { status: 404 })
+      }
+      const doc = payment as any
+      const transactions = Array.isArray(doc.transactions) ? [...doc.transactions] : []
+      if (transactions.length === 0 && doc.amountPaid > 0) {
+        transactions.push({
+          amount: doc.amountPaid,
+          createdAt: doc.createdAt || new Date(),
+          paymentMethod: doc.paymentMethod,
+          notes: doc.notes,
+        })
+      }
+      transactions.push({
+        amount,
+        createdAt: new Date(),
+        paymentMethod: body.paymentMethod || undefined,
+        notes: body.notes || undefined,
+      })
+      const newAmountPaid = transactions.reduce((s: number, t: any) => s + (t.amount || 0), 0)
+      const newRemaining = Math.max(0, (doc.totalAmount || 0) - newAmountPaid)
+      doc.transactions = transactions
+      doc.amountPaid = newAmountPaid
+      doc.remainingBalance = newRemaining
+      doc.paymentMethod = body.paymentMethod || doc.paymentMethod
+      doc.updatedAt = new Date()
+      await doc.save()
+      return NextResponse.json(doc, { status: 200 })
+    }
+
     if (!body.patientId || !body.patientName) {
       return NextResponse.json({ error: 'Missing required fields (patientId, patientName)' }, { status: 400 })
     }
@@ -61,13 +99,14 @@ export async function POST(request: NextRequest) {
       totalAmount,
       amountPaid,
       remainingBalance,
+      transactions: [{ amount: amountPaid, createdAt: new Date(), paymentMethod: body.paymentMethod || undefined, notes: body.notes || undefined }],
       createdAt: new Date(),
       updatedAt: new Date(),
     }
 
     const payment = new Payment(paymentData)
     await payment.save()
-    
+
     return NextResponse.json(payment, { status: 201 })
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 })

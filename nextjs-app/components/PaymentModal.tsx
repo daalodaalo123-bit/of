@@ -16,11 +16,12 @@ interface Payment {
 interface PaymentModalProps {
   payment: Payment | null
   patients: { id: string; name: string }[]
+  initialPatient?: { id: string; name: string; phone?: string } | null
   onClose: () => void
   onSave: () => void
 }
 
-export default function PaymentModal({ payment, patients, onClose, onSave }: PaymentModalProps) {
+export default function PaymentModal({ payment, patients, initialPatient, onClose, onSave }: PaymentModalProps) {
   const [formData, setFormData] = useState<Payment>({
     patientId: '',
     patientName: '',
@@ -29,6 +30,8 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
     paymentMethod: undefined,
     notes: '',
   })
+  const [newTreatment, setNewTreatment] = useState(true)
+  const [existingPayments, setExistingPayments] = useState<Payment[]>([])
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [patientDropdownOpen, setPatientDropdownOpen] = useState(false)
@@ -37,6 +40,12 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
   const filteredPatients = patients.filter((p) =>
     p.name.toLowerCase().includes(patientSearch.toLowerCase().trim())
   )
+
+  const addToPaymentId = (() => {
+    if (newTreatment || !formData.patientId || existingPayments.length === 0) return null
+    const withBalance = existingPayments.find((p) => (p.remainingBalance ?? 0) > 0)
+    return (withBalance || existingPayments[0])?.id ?? null
+  })()
 
   useEffect(() => {
     const fn = (e: MouseEvent) => {
@@ -57,6 +66,16 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
         amountPaid: payment.amountPaid,
         notes: payment.notes || '',
       })
+      setNewTreatment(true)
+    } else if (initialPatient) {
+      setFormData({
+        patientId: initialPatient.id,
+        patientName: initialPatient.name,
+        totalAmount: 0,
+        amountPaid: 0,
+        notes: '',
+      })
+      setNewTreatment(false)
     } else {
       setFormData({
         patientId: patients[0]?.id || '',
@@ -65,8 +84,24 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
         amountPaid: 0,
         notes: '',
       })
+      setNewTreatment(true)
     }
-  }, [payment, patients])
+  }, [payment, patients, initialPatient])
+
+  useEffect(() => {
+    if (!formData.patientId || newTreatment || payment) {
+      setExistingPayments([])
+      return
+    }
+    let cancelled = false
+    fetch(`/api/payments?patientId=${encodeURIComponent(formData.patientId)}`)
+      .then((r) => r.ok ? r.json() : [])
+      .then((data: Payment[]) => {
+        if (!cancelled) setExistingPayments(data)
+      })
+      .catch(() => { if (!cancelled) setExistingPayments([]) })
+    return () => { cancelled = true }
+  }, [formData.patientId, newTreatment, payment])
 
   const handlePatientSelect = (p: { id: string; name: string }) => {
     setFormData((prev) => ({ ...prev, patientId: p.id, patientName: p.name }))
@@ -78,21 +113,46 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
     setError(null)
     setLoading(true)
     try {
+      const amountPaid = Number(formData.amountPaid) || 0
+      if (addToPaymentId && amountPaid > 0) {
+        const res = await fetch('/api/payments', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            addToPaymentId,
+            amountPaid,
+            paymentMethod: formData.paymentMethod || null,
+            notes: formData.notes || null,
+          }),
+        })
+        const data = await res.json()
+        if (!res.ok) { setError(data.error || 'Failed to add payment'); setLoading(false); return }
+        onSave()
+        onClose()
+        return
+      }
       const url = payment?.id ? `/api/payments/${payment.id}` : '/api/payments'
       const method = payment?.id ? 'PUT' : 'POST'
       const totalAmount = Number(formData.totalAmount) || 0
-      const amountPaid = Number(formData.amountPaid) || 0
-      const payload = {
+      const amount = Number(formData.amountPaid) || 0
+      const payload = addToPaymentId ? undefined : {
         ...formData,
         id: payment?.id || `payment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         totalAmount,
-        amountPaid,
-        remainingBalance: totalAmount - amountPaid,
+        amountPaid: amount,
+        remainingBalance: totalAmount - amount,
         paymentMethod: formData.paymentMethod || null,
       }
-      const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-      const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Failed to save'); setLoading(false); return }
+      if (!payload && !addToPaymentId) {
+        setError('Select a patient or choose New treatment')
+        setLoading(false)
+        return
+      }
+      if (payload) {
+        const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+        const data = await res.json()
+        if (!res.ok) { setError(data.error || 'Failed to save'); setLoading(false); return }
+      }
       onSave()
       onClose()
     } catch (err: any) {
@@ -102,32 +162,41 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
     }
   }
 
+  const isAddToExisting = !payment && !newTreatment && !!addToPaymentId
   const remaining = (Number(formData.totalAmount) || 0) - (Number(formData.amountPaid) || 0)
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
         <div className="p-6 border-b flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">{payment ? 'Edit Payment' : 'Add Payment'}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">{payment ? 'Edit Payment' : isAddToExisting ? 'Add to existing treatment' : 'Add Payment'}</h2>
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-6">
           {error && <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-xl text-sm">{error}</div>}
           <div className="space-y-4">
+            {!payment && (
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={newTreatment} onChange={(e) => setNewTreatment(e.target.checked)} className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+                <span className="text-sm font-medium text-gray-700">New treatment (new bill)</span>
+              </label>
+            )}
             <div ref={patientDropdownRef} className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
               <div
-                onClick={() => setPatientDropdownOpen((v: boolean) => !v)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent cursor-pointer flex items-center justify-between min-h-[44px] bg-white"
+                onClick={() => !isAddToExisting && setPatientDropdownOpen((v: boolean) => !v)}
+                className={`w-full px-4 py-3 border border-gray-200 rounded-xl flex items-center justify-between min-h-[44px] bg-white ${isAddToExisting ? 'cursor-default' : 'cursor-pointer focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent'}`}
               >
                 <span className={formData.patientName ? 'text-gray-900' : 'text-gray-400'}>
                   {formData.patientName || 'Search and select patient...'}
                 </span>
-                <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
+                {!isAddToExisting && (
+                  <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                )}
               </div>
-              {patientDropdownOpen && (
+              {!isAddToExisting && patientDropdownOpen && (
                 <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-hidden">
                   <div className="p-2 border-b border-gray-100">
                     <input
@@ -160,13 +229,19 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
                 </div>
               )}
             </div>
+            {!payment && !newTreatment && formData.patientId && existingPayments.length === 0 && (
+              <p className="text-xs text-amber-600">No existing treatment for this patient. Check &quot;New treatment&quot; to create one.</p>
+            )}
+            {isAddToExisting && <p className="text-xs text-gray-500">This amount will be added to the existing treatment record.</p>}
+            {!isAddToExisting && (
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Total Amount ($)</label>
+                <input type="number" step="0.01" min="0" value={formData.totalAmount || ''} onChange={(e) => setFormData({ ...formData, totalAmount: Number(e.target.value) || 0 })} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+              </div>
+            )}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Total Amount ($)</label>
-              <input type="number" step="0.01" min="0" value={formData.totalAmount || ''} onChange={(e) => setFormData({ ...formData, totalAmount: Number(e.target.value) || 0 })} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Amount Paid ($)</label>
-              <input type="number" step="0.01" min="0" value={formData.amountPaid || ''} onChange={(e) => setFormData({ ...formData, amountPaid: Number(e.target.value) || 0 })} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">{isAddToExisting ? 'Amount to add ($)' : 'Amount Paid ($)'}</label>
+              <input type="number" step="0.01" min="0" required value={formData.amountPaid || ''} onChange={(e) => setFormData({ ...formData, amountPaid: Number(e.target.value) || 0 })} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Payment Method</label>
@@ -181,10 +256,12 @@ export default function PaymentModal({ payment, patients, onClose, onSave }: Pay
                 <option value="premier_bank">Premier Bank</option>
               </select>
             </div>
-            <div className="p-3 bg-gray-50 rounded-xl">
-              <span className="text-sm text-gray-600">Remaining Balance: </span>
-              <span className="font-semibold text-gray-900">${remaining.toFixed(2)}</span>
-            </div>
+            {!isAddToExisting && (
+              <div className="p-3 bg-gray-50 rounded-xl">
+                <span className="text-sm text-gray-600">Remaining Balance: </span>
+                <span className="font-semibold text-gray-900">${remaining.toFixed(2)}</span>
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
               <textarea rows={2} value={formData.notes || ''} onChange={(e) => setFormData({ ...formData, notes: e.target.value })} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" />

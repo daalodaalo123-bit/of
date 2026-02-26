@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IDoctor extends Document {
   id: string;
   name: string;
-  email: string;
+  email?: string;
   phone: string;
   specialization?: string;
   createdAt: Date;
@@ -13,7 +13,7 @@ export interface IDoctor extends Document {
 const DoctorSchema: Schema = new Schema({
   id: { type: String, required: true, unique: true },
   name: { type: String, required: true },
-  email: { type: String, required: true },
+  email: { type: String, required: false, default: null },
   phone: { type: String, required: true },
   specialization: { type: String, default: null },
   createdAt: { type: Date, default: Date.now },

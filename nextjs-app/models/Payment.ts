@@ -1,5 +1,12 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export interface IPaymentTransaction {
+  amount: number;
+  createdAt: Date;
+  paymentMethod?: string;
+  notes?: string;
+}
+
 export interface IPayment extends Document {
   id: string;
   patientId: string;
@@ -9,6 +16,7 @@ export interface IPayment extends Document {
   remainingBalance: number;
   paymentMethod?: 'zaad' | 'edahab' | 'premier_bank';
   notes?: string;
+  transactions?: IPaymentTransaction[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,6 +30,10 @@ const PaymentSchema: Schema = new Schema({
   remainingBalance: { type: Number, required: true, default: 0 },
   paymentMethod: { type: String, enum: ['zaad', 'edahab', 'premier_bank'], default: undefined },
   notes: { type: String, default: null },
+  transactions: {
+    type: [{ amount: Number, createdAt: Date, paymentMethod: String, notes: String }],
+    default: undefined,
+  },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 }, {
