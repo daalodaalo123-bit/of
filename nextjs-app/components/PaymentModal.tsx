@@ -77,9 +77,9 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
       })
     } else {
       setFormData({
-        patientId: patients[0]?.id || '',
-        patientName: patients[0]?.name || '',
-        totalAmount: patients[0]?.totalDue ?? 0,
+        patientId: '',
+        patientName: '',
+        totalAmount: 0,
         amountPaid: 0,
         notes: '',
       })
