@@ -15,7 +15,7 @@ interface Payment {
 
 interface PaymentModalProps {
   payment: Payment | null
-  patients: { id: string; name: string; totalDue?: number }[]
+  patients: { id: string; name: string; phone?: string; totalDue?: number }[]
   initialPatient?: { id: string; name: string; phone?: string } | null
   onClose: () => void
   onSave: () => void
@@ -36,8 +36,10 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
   const [patientDropdownOpen, setPatientDropdownOpen] = useState(false)
   const [patientSearch, setPatientSearch] = useState('')
   const patientDropdownRef = useRef<HTMLDivElement>(null)
+  const search = patientSearch.toLowerCase().trim()
   const filteredPatients = patients.filter((p) =>
-    p.name.toLowerCase().includes(patientSearch.toLowerCase().trim())
+    p.name.toLowerCase().includes(search) ||
+    (p.phone && p.phone.includes(search))
   )
 
   const addToPaymentId = (() => {
@@ -99,7 +101,7 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
     return () => { cancelled = true }
   }, [formData.patientId, payment])
 
-  const handlePatientSelect = (p: { id: string; name: string; totalDue?: number }) => {
+  const handlePatientSelect = (p: { id: string; name: string; phone?: string; totalDue?: number }) => {
     const patient = patients.find((x) => x.id === p.id)
     setFormData((prev) => ({ ...prev, patientId: p.id, patientName: p.name, totalAmount: patient?.totalDue ?? 0 }))
     setPatientDropdownOpen(false)
@@ -176,24 +178,22 @@ export default function PaymentModal({ payment, patients, initialPatient, onClos
             <div ref={patientDropdownRef} className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-2">Patient *</label>
               <div
-                onClick={() => !isAddToExisting && setPatientDropdownOpen((v: boolean) => !v)}
-                className={`w-full px-4 py-3 border border-gray-200 rounded-xl flex items-center justify-between min-h-[44px] bg-white ${isAddToExisting ? 'cursor-default' : 'cursor-pointer focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent'}`}
+                onClick={() => setPatientDropdownOpen((v: boolean) => !v)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl flex items-center justify-between min-h-[44px] bg-white cursor-pointer focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent"
               >
                 <span className={formData.patientName ? 'text-gray-900' : 'text-gray-400'}>
                   {formData.patientName || 'Search and select patient...'}
                 </span>
-                {!isAddToExisting && (
-                  <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                )}
+                <svg className="w-5 h-5 text-gray-400 flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
               </div>
-              {!isAddToExisting && patientDropdownOpen && (
+              {patientDropdownOpen && (
                 <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-lg max-h-60 overflow-hidden">
                   <div className="p-2 border-b border-gray-100">
                     <input
                       type="text"
-                      placeholder="Search by name..."
+                      placeholder="Search by name or phone..."
                       value={patientSearch}
                       onChange={(e) => setPatientSearch(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
