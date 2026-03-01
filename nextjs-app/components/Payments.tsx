@@ -21,6 +21,8 @@ interface Payment {
   remainingBalance: number
   paymentMethod?: string
   notes?: string
+  createdAt?: string
+  transactions?: { amount: number; createdAt?: string | Date; paymentMethod?: string }[]
 }
 
 interface GroupedPatient {
@@ -76,6 +78,20 @@ export default function Payments() {
         ? Math.max(0, g.totalFromRegistration - g.totalPaid)
         : g.payments.reduce((s: number, p: Payment) => s + (p.remainingBalance ?? 0), 0)
     })
+    const getLastPaymentTime = (g: GroupedPatient) => {
+      let latest = 0
+      for (const p of g.payments) {
+        const base = p.createdAt ? new Date(p.createdAt).getTime() : 0
+        if (base > latest) latest = base
+        const tx = p.transactions
+        if (tx) for (const t of tx) {
+          const tTime = t.createdAt ? new Date(t.createdAt).getTime() : 0
+          if (tTime > latest) latest = tTime
+        }
+      }
+      return latest
+    }
+    list.sort((a, b) => getLastPaymentTime(b) - getLastPaymentTime(a))
     return list
   }, [payments, patientById])
 
@@ -262,6 +278,14 @@ export default function Payments() {
           onEditPayment={(p) => { setHistoryPatient(null); setSelectedPayment(p as Payment); setAddPaymentForPatient(null); setIsModalOpen(true) }}
           onDeletePayment={async (p) => {
             await fetch(`/api/payments/${p.id}`, { method: 'DELETE' })
+            loadPayments()
+          }}
+          onDeleteTransaction={async (paymentId, transactionIndex) => {
+            await fetch(`/api/payments/${paymentId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ removeTransactionIndex: transactionIndex }),
+            })
             loadPayments()
           }}
         />
