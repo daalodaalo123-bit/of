@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from 'react'
 
+const TREATMENT_OPTIONS = ['Upper', 'Ortho upper and lower', 'Upper and lower', 'Lower'] as const
+
 interface Patient {
   id?: string
   name: string
   phone: string
   dateOfBirth?: string
   gender: string
+  treatmentType: string
   address: string
   medicalHistory?: string
   allergies?: string
@@ -28,6 +31,7 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
     phone: '',
     dateOfBirth: '',
     gender: '',
+    treatmentType: '',
     address: '',
     medicalHistory: '',
     allergies: '',
@@ -50,6 +54,7 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
     if (patient) {
       setFormData({
         ...patient,
+        treatmentType: patient.treatmentType ?? '',
         dateOfBirth: patient.dateOfBirth ? new Date(patient.dateOfBirth).toISOString().split('T')[0] : '',
         doctorId: patient.doctorId || '',
         doctorName: patient.doctorName || '',
@@ -67,6 +72,12 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
     setLoading(true)
 
     try {
+      if (!formData.treatmentType || !TREATMENT_OPTIONS.includes(formData.treatmentType as typeof TREATMENT_OPTIONS[number])) {
+        setError('Treatment type is required')
+        setLoading(false)
+        return
+      }
+
       // Validate date
       if (!formData.dateOfBirth) {
         setError('Date of Birth is required')
@@ -83,6 +94,7 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
         phone: formData.phone.trim(),
         dateOfBirth: formData.dateOfBirth ? new Date(formData.dateOfBirth).toISOString() : null,
         gender: formData.gender,
+        treatmentType: formData.treatmentType,
         address: formData.address.trim(),
         medicalHistory: formData.medicalHistory?.trim() || null,
         allergies: formData.allergies?.trim() || null,
@@ -188,6 +200,23 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
                 <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Treatment Type *
+              </label>
+              <select
+                required
+                value={formData.treatmentType}
+                onChange={(e) => setFormData({ ...formData, treatmentType: e.target.value })}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-gray-50 focus:bg-white"
+              >
+                <option value="">Select treatment type</option>
+                {TREATMENT_OPTIONS.map((opt: string) => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
               </select>
             </div>
 

@@ -36,6 +36,7 @@ export async function POST(request: NextRequest) {
           phone: String(row.Phone || row.phone || ''),
           dateOfBirth: row.DateOfBirth || row.dateOfBirth || row['Date of Birth'] || '',
           gender: row.Gender || row.gender || 'Other',
+          treatmentType: ['Upper', 'Ortho upper and lower', 'Upper and lower', 'Lower'].includes(row.TreatmentType ?? row.treatmentType ?? '') ? (row.TreatmentType ?? row.treatmentType) : 'Upper',
           address: row.Address || row.address || '',
           medicalHistory: row.MedicalHistory || row.medicalHistory || row['Medical History'] || null,
           allergies: row.Allergies || row.allergies || null,

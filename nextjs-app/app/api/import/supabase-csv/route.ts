@@ -86,6 +86,21 @@ export async function POST(request: NextRequest) {
         const totalDueInitial = Number(row.total_due_initial ?? row.totalDueInitial ?? 0) || 0
         const totalDue = Number(row.total_due ?? row.totalDue ?? totalDueInitial) || totalDueInitial
 
+        const cond = String(row.condition ?? '').toLowerCase()
+        const treatmentTypeMap: Record<string, string> = {
+          'upper': 'Upper',
+          'ortho upper and lower': 'Ortho upper and lower',
+          'orthodentic /upper/lower': 'Ortho upper and lower',
+          'orthodentic / upper/lower': 'Ortho upper and lower',
+          'upper and lower': 'Upper and lower',
+          ' /upper/lower': 'Upper and lower',
+          'upper lower': 'Upper and lower',
+          'qaybta sare': 'Upper',
+          'qaybta hoose': 'Lower',
+          'lower': 'Lower',
+        }
+        const treatmentType = treatmentTypeMap[cond.trim()] ?? (cond.includes('lower') && cond.includes('upper') ? 'Upper and lower' : 'Upper')
+
         const patientDoc = {
           id: useId,
           name,
@@ -93,6 +108,7 @@ export async function POST(request: NextRequest) {
           phone,
           dateOfBirth: safeDate(row.birth_date ?? row.birthDate) ?? null,
           gender,
+          treatmentType,
           address: String(row.address ?? row.Address ?? '-').trim() || '-',
           medicalHistory: row.condition ? String(row.condition).trim() : null,
           allergies: null,

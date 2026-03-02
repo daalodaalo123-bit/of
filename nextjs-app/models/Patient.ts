@@ -1,5 +1,7 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export type TreatmentType = 'Upper' | 'Ortho upper and lower' | 'Upper and lower' | 'Lower';
+
 export interface IPatient extends Document {
   id: string;
   name: string;
@@ -7,6 +9,7 @@ export interface IPatient extends Document {
   phone: string;
   dateOfBirth?: Date;
   gender: 'Male' | 'Female' | 'Other';
+  treatmentType: TreatmentType;
   address: string;
   medicalHistory?: string;
   allergies?: string;
@@ -24,6 +27,7 @@ const PatientSchema: Schema = new Schema({
   phone: { type: String, required: true },
   dateOfBirth: { type: Date, required: false, default: null },
   gender: { type: String, required: true, enum: ['Male', 'Female', 'Other'] },
+  treatmentType: { type: String, required: true, enum: ['Upper', 'Ortho upper and lower', 'Upper and lower', 'Lower'], default: 'Upper' },
   address: { type: String, required: true },
   medicalHistory: { type: String, default: null },
   allergies: { type: String, default: null },

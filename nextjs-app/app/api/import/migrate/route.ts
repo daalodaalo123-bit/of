@@ -55,6 +55,8 @@ export async function POST(request: NextRequest) {
           let existing = await Patient.findOne({ phone })
           if (!existing) {
             const patientId = `patient-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+            const txType = row.TreatmentType ?? row.treatmentType ?? row['Treatment Type']
+            const validTx = ['Upper', 'Ortho upper and lower', 'Upper and lower', 'Lower'].includes(txType) ? txType : 'Upper'
             await new Patient({
               id: patientId,
               name: row.Name || row.name || row.Patient || row.patient || '',
@@ -62,6 +64,7 @@ export async function POST(request: NextRequest) {
               phone,
               dateOfBirth: row.DateOfBirth || row.dateOfBirth || row['Date of Birth'] ? new Date(row.DateOfBirth || row.dateOfBirth || row['Date of Birth']) : null,
               gender: row.Gender || row.gender || 'Other',
+              treatmentType: validTx,
               address: row.Address || row.address || '-',
               medicalHistory: row.MedicalHistory || row.medicalHistory || null,
               allergies: row.Allergies || row.allergies || null,

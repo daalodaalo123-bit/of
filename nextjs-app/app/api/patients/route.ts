@@ -33,9 +33,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     console.log('📝 Received patient data:', { name: body.name, email: body.email })
     
-    // Validate required fields
-    if (!body.name || !body.phone || !body.gender || !body.address) {
-      return NextResponse.json({ error: 'Missing required fields (name, phone, gender, address)' }, { status: 400 })
+    const validTreatmentTypes = ['Upper', 'Ortho upper and lower', 'Upper and lower', 'Lower']
+    if (!body.name || !body.phone || !body.gender || !body.address || !body.treatmentType || !validTreatmentTypes.includes(body.treatmentType)) {
+      return NextResponse.json({ error: 'Missing required fields (name, phone, gender, address, treatment type)' }, { status: 400 })
     }
 
     // Check for existing patient by id or email (if email provided)
