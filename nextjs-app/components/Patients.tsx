@@ -11,6 +11,7 @@ interface Patient {
   phone: string
   dateOfBirth?: string
   gender: string
+  treatmentType?: string
   address: string
   medicalHistory?: string
   allergies?: string
