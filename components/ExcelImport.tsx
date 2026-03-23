@@ -87,13 +87,13 @@ export default function ExcelImport({ onClose, onImport }: ExcelImportProps) {
             />
             {mode === 'supabase' ? (
               <div className="mt-3 p-4 bg-amber-900/20 border border-amber-800/30 rounded-xl text-sm space-y-1">
-                <p className="font-medium text-amber-300">Supabase export format (CSV or Excel):</p>
+                <p className="font-medium text-amber-600 dark:text-amber-300">Supabase export format (CSV or Excel):</p>
                 <p className="text-muted">Columns: <strong className="text-foreground">id</strong>, <strong className="text-foreground">name</strong>, <strong className="text-foreground">phone</strong>, birth_date, gender, condition, doctor_id, total_due, total_due_initial, email, created_at</p>
                 <p className="text-xs text-muted mt-2">Keeps your old IDs. Maps total_due_initial → registration total, creates payment history.</p>
               </div>
             ) : mode === 'migrate' ? (
               <div className="mt-3 p-4 bg-blue-900/20 border border-blue-800/30 rounded-xl text-sm space-y-1">
-                <p className="font-medium text-blue-300">Migration format (Name, Phone, Payment history):</p>
+                <p className="font-medium text-blue-600 dark:text-blue-300">Migration format (Name, Phone, Payment history):</p>
                 <p className="text-muted">Required: <strong className="text-foreground">Name</strong>, <strong className="text-foreground">Phone</strong></p>
                 <p className="text-muted">Optional: AmountPaid, TotalAmount, PaymentDate, PaymentMethod, Notes</p>
                 <p className="text-muted">Optional: Email, Gender, Address, DateOfBirth</p>
@@ -110,8 +110,8 @@ export default function ExcelImport({ onClose, onImport }: ExcelImportProps) {
             <div className="mb-6 space-y-2">
               <div className={`p-4 rounded-xl ${
                 message.type === 'success'
-                  ? 'bg-green-900/20 text-green-300 border border-green-800/30'
-                  : 'bg-red-900/20 text-red-300 border border-red-800/30'
+                  ? 'bg-green-900/20 text-green-600 dark:text-green-300 border border-green-800/30'
+                  : 'bg-red-900/20 text-red-600 dark:text-red-300 border border-red-800/30'
               }`}>
                 {message.text}
               </div>

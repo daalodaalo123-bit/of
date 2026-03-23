@@ -77,7 +77,7 @@ export default function ExpenseModal({ expense, onClose, onSave }: ExpenseModalP
           <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-accent/50 text-muted">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-6">
-          {error && <div className="mb-4 p-3 bg-red-900/30 border border-red-800/50 text-red-300 rounded-xl text-sm">{error}</div>}
+          {error && <div className="mb-4 p-3 bg-red-900/30 border border-red-800/50 text-red-600 dark:text-red-300 rounded-xl text-sm">{error}</div>}
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">Amount ($) *</label>

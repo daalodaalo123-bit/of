@@ -100,9 +100,9 @@ export default function Appointments() {
                   </div>
                   <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
                     <span className={`px-2 lg:px-3 py-1 rounded-full text-xs font-medium flex-shrink-0 ${
-                      apt.status === 'scheduled' ? 'bg-blue-900/40 text-blue-300' :
-                      apt.status === 'completed' ? 'bg-green-900/40 text-green-300' :
-                      apt.status === 'cancelled' ? 'bg-red-900/40 text-red-300' :
+                      apt.status === 'scheduled' ? 'bg-blue-900/40 text-blue-600 dark:text-blue-300' :
+                      apt.status === 'completed' ? 'bg-green-900/40 text-green-600 dark:text-green-300' :
+                      apt.status === 'cancelled' ? 'bg-red-900/40 text-red-600 dark:text-red-300' :
                       'bg-gray-700/50 text-foreground'
                     }`}>
                       {apt.status}
@@ -119,7 +119,7 @@ export default function Appointments() {
                       </button>
                       <button
                         onClick={() => handleDelete(apt.id)}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-900/40 transition-colors text-red-400"
+                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-900/40 transition-colors text-red-600 dark:text-red-400"
                         title="Delete"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

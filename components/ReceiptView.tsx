@@ -77,7 +77,7 @@ export default function ReceiptView({ payment, onClose }: ReceiptViewProps) {
             )}
             <div className="flex justify-between">
               <span className="text-muted">Amount Paid</span>
-              <span className="font-bold text-green-400">${payment.amountPaid.toFixed(2)}</span>
+              <span className="font-bold text-green-600 dark:text-green-400">${payment.amountPaid.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted">Total Amount</span>

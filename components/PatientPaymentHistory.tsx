@@ -130,16 +130,16 @@ export default function PatientPaymentHistory({ patientId, patientName, patientP
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="p-3 sm:p-4 rounded-xl bg-blue-900/20 border border-blue-800/30">
-                  <p className="text-xs font-medium text-blue-400 mb-1">Total (from registration)</p>
-                  <p className="text-lg sm:text-xl font-bold text-blue-300">${totalFromRegistration.toFixed(2)}</p>
+                  <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">Total (from registration)</p>
+                  <p className="text-lg sm:text-xl font-bold text-blue-600 dark:text-blue-300">${totalFromRegistration.toFixed(2)}</p>
                 </div>
                 <div className="p-3 sm:p-4 rounded-xl bg-green-900/20 border border-green-800/30">
-                  <p className="text-xs font-medium text-green-400 mb-1">Total Paid</p>
-                  <p className="text-lg sm:text-xl font-bold text-green-300">${totalPaid.toFixed(2)}</p>
+                  <p className="text-xs font-medium text-green-600 dark:text-green-400 mb-1">Total Paid</p>
+                  <p className="text-lg sm:text-xl font-bold text-green-600 dark:text-green-300">${totalPaid.toFixed(2)}</p>
                 </div>
                 <div className="p-3 sm:p-4 rounded-xl bg-red-900/20 border border-red-800/30">
-                  <p className="text-xs font-medium text-red-400 mb-1">Remaining Balance</p>
-                  <p className="text-lg sm:text-xl font-bold text-red-300">${remainingBalance.toFixed(2)}</p>
+                  <p className="text-xs font-medium text-red-600 dark:text-red-400 mb-1">Remaining Balance</p>
+                  <p className="text-lg sm:text-xl font-bold text-red-600 dark:text-red-300">${remainingBalance.toFixed(2)}</p>
                 </div>
               </div>
 
@@ -153,7 +153,7 @@ export default function PatientPaymentHistory({ patientId, patientName, patientP
                       </p>
                     </div>
                     <div className="flex gap-2 flex-shrink-0">
-                      <button type="button" onClick={() => onDownloadReceipt(e.receiptPayment)} className="px-3 py-1.5 text-sm font-medium text-blue-400 hover:bg-blue-900/30 rounded-lg transition-colors">
+                      <button type="button" onClick={() => onDownloadReceipt(e.receiptPayment)} className="px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-900/30 rounded-lg transition-colors">
                         Receipt
                       </button>
                       {onEditPayment && e.transactionIndex == null && (
@@ -174,7 +174,7 @@ export default function PatientPaymentHistory({ patientId, patientName, patientP
                               }
                             } finally { load() }
                           }}
-                          className="p-1.5 rounded-lg hover:bg-red-900/30 text-red-400"
+                          className="p-1.5 rounded-lg hover:bg-red-900/30 text-red-600 dark:text-red-400"
                           title="Delete"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>

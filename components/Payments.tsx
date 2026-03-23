@@ -182,20 +182,20 @@ export default function Payments() {
                 >
                   <td className="px-4 py-3 text-sm text-muted">{i + 1}</td>
                   <td className="px-4 py-3">
-                    <span className="font-medium text-blue-400 hover:text-blue-300 hover:underline">
+                    <span className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-600 dark:text-blue-300 hover:underline">
                       {g.patientName}
                     </span>
                     <span className="block text-xs text-muted mt-0.5">Click to view payment history</span>
                   </td>
                   <td className="px-4 py-3 text-sm text-muted tabular-nums">{g.patientPhone || '-'}</td>
                   <td className="px-4 py-3 text-right text-foreground tabular-nums whitespace-nowrap">${g.totalFromRegistration.toFixed(2)}</td>
-                  <td className="px-4 py-3 text-right font-medium text-green-400 tabular-nums whitespace-nowrap">${g.totalPaid.toFixed(2)}</td>
-                  <td className="px-4 py-3 text-right font-medium tabular-nums whitespace-nowrap">{g.totalBalance > 0 ? <span className="text-amber-400">${g.totalBalance.toFixed(2)}</span> : <span className="text-muted">$0.00</span>}</td>
+                  <td className="px-4 py-3 text-right font-medium text-green-600 dark:text-green-400 tabular-nums whitespace-nowrap">${g.totalPaid.toFixed(2)}</td>
+                  <td className="px-4 py-3 text-right font-medium tabular-nums whitespace-nowrap">{g.totalBalance > 0 ? <span className="text-amber-600 dark:text-amber-400">${g.totalBalance.toFixed(2)}</span> : <span className="text-muted">$0.00</span>}</td>
                   <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="flex justify-end gap-2">
                       <button
                         onClick={() => { setSelectedPayment(null); setAddPaymentForPatient({ id: g.patientId, name: g.patientName, phone: g.patientPhone }); setIsModalOpen(true) }}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-900/40 text-blue-400"
+                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-900/40 text-blue-600 dark:text-blue-400"
                         title="Add payment"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
@@ -233,18 +233,18 @@ export default function Payments() {
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="text-xs text-muted w-5">{i + 1}.</span>
-                      <span className="font-medium text-blue-400 truncate">{g.patientName}</span>
+                      <span className="font-medium text-blue-600 dark:text-blue-400 truncate">{g.patientName}</span>
                     </div>
                     <div className="text-xs text-muted pl-7">Tap to view payment history</div>
                     <div className="text-xs text-muted pl-7">{g.patientPhone || 'No phone'}</div>
                     <div className="flex gap-4 pl-7 text-xs">
                       <span className="text-foreground">Total: ${g.totalFromRegistration.toFixed(2)}</span>
-                      <span className="text-green-400 font-medium">Paid: ${g.totalPaid.toFixed(2)}</span>
+                      <span className="text-green-600 dark:text-green-400 font-medium">Paid: ${g.totalPaid.toFixed(2)}</span>
                       <span className="text-muted">Balance: ${g.totalBalance.toFixed(2)}</span>
                     </div>
                   </div>
                   <div className="flex gap-2 ml-2" onClick={(e) => e.stopPropagation()}>
-                    <button onClick={() => { setSelectedPayment(null); setAddPaymentForPatient({ id: g.patientId, name: g.patientName, phone: g.patientPhone }); setIsModalOpen(true) }} className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-900/30 text-blue-400" title="Add payment">
+                    <button onClick={() => { setSelectedPayment(null); setAddPaymentForPatient({ id: g.patientId, name: g.patientName, phone: g.patientPhone }); setIsModalOpen(true) }} className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-900/30 text-blue-600 dark:text-blue-400" title="Add payment">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" /></svg>
                     </button>
                     <button onClick={() => setHistoryPatient({ id: g.patientId, name: g.patientName, phone: g.patientPhone })} className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-700/40 text-muted" title="View history">

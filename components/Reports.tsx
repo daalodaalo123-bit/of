@@ -140,7 +140,7 @@ export default function Reports() {
     return (
       <div className="w-full max-w-7xl mx-auto">
         <div className="flex items-center justify-center py-20">
-          <p className="text-red-400">{error || 'No data'}</p>
+          <p className="text-red-600 dark:text-red-400">{error || 'No data'}</p>
         </div>
       </div>
     )
@@ -179,15 +179,15 @@ export default function Reports() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="p-4 bg-green-900/20 rounded-xl border border-green-800/30">
               <p className="text-sm text-muted mb-1">Total Revenue</p>
-              <p className="text-2xl font-bold text-green-400">${data.financialOverview.totalRevenue.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-green-600 dark:text-green-400">${data.financialOverview.totalRevenue.toLocaleString()}</p>
             </div>
             <div className="p-4 bg-red-900/20 rounded-xl border border-red-800/30">
               <p className="text-sm text-muted mb-1">Total Expenses</p>
-              <p className="text-2xl font-bold text-red-400">${data.financialOverview.totalExpenses.toLocaleString()}</p>
+              <p className="text-2xl font-bold text-red-600 dark:text-red-400">${data.financialOverview.totalExpenses.toLocaleString()}</p>
             </div>
             <div className="p-4 bg-blue-900/20 rounded-xl border border-blue-800/30">
               <p className="text-sm text-muted mb-1">Profit</p>
-              <p className={`text-2xl font-bold ${data.financialOverview.profit >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
+              <p className={`text-2xl font-bold ${data.financialOverview.profit >= 0 ? 'text-blue-600 dark:text-blue-400' : 'text-red-600 dark:text-red-400'}`}>
                 ${data.financialOverview.profit.toLocaleString()}
               </p>
             </div>
@@ -260,7 +260,7 @@ export default function Reports() {
             <div className="space-y-4">
               <div className="p-4 bg-blue-900/20 rounded-xl border border-blue-800/30">
                 <p className="text-sm text-muted">Total Patients</p>
-                <p className="text-2xl font-bold text-blue-400">{data.patientStats.total}</p>
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{data.patientStats.total}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-foreground mb-2">Appointments by Status</p>

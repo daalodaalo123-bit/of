@@ -256,10 +256,10 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                 {analytics.upcomingAppointments.slice(0, 6).map((apt) => (
                   <div key={apt.id} className="flex items-center gap-3 p-3 bg-blue-900/20 rounded-xl border border-blue-800/30">
                     <div className="flex-shrink-0 w-10 h-10 bg-blue-700/40 rounded-lg flex flex-col items-center justify-center">
-                      <span className="text-[10px] font-semibold text-blue-300 leading-none">
+                      <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-300 leading-none">
                         {new Date(apt.appointmentDate).toLocaleDateString('en-US', { weekday: 'short' })}
                       </span>
-                      <span className="text-xs font-bold text-blue-200">
+                      <span className="text-xs font-bold text-blue-600 dark:text-blue-200">
                         {new Date(apt.appointmentDate).getDate()}
                       </span>
                     </div>
@@ -419,9 +419,9 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                     </p>
                   </div>
                   <span className={`px-2 sm:px-2 lg:px-3 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium self-start sm:self-auto whitespace-nowrap ${
-                    apt.status === 'scheduled' ? 'bg-blue-900/40 text-blue-300' :
-                    apt.status === 'completed' ? 'bg-green-900/40 text-green-300' :
-                    'bg-red-900/40 text-red-300'
+                    apt.status === 'scheduled' ? 'bg-blue-900/40 text-blue-600 dark:text-blue-300' :
+                    apt.status === 'completed' ? 'bg-green-900/40 text-green-600 dark:text-green-300' :
+                    'bg-red-900/40 text-red-600 dark:text-red-300'
                   }`}>
                     {apt.status}
                   </span>

@@ -146,7 +146,7 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
         </div>
 
         <form onSubmit={handleSubmit} className="p-8">
-          {error && <div className="mb-4 p-3 bg-red-900/30 border border-red-800/50 text-red-300 rounded-xl text-sm">{error}</div>}
+          {error && <div className="mb-4 p-3 bg-red-900/30 border border-red-800/50 text-red-600 dark:text-red-300 rounded-xl text-sm">{error}</div>}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
             <div>
               <label className={labelClass}>Full Name *</label>
