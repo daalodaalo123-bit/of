@@ -130,7 +130,7 @@ export default function Reports() {
     return (
       <div className="w-full max-w-7xl mx-auto">
         <div className="flex items-center justify-center py-20">
-          <p className="text-gray-400">Loading reports...</p>
+          <p className="text-muted">Loading reports...</p>
         </div>
       </div>
     )
@@ -154,8 +154,8 @@ export default function Reports() {
     <div className="w-full max-w-7xl mx-auto">
       <div className="mb-3 sm:mb-4 lg:mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-white mb-1 tracking-tight">Reports & Analytics</h1>
-          <p className="text-gray-400 text-xs sm:text-sm lg:text-lg hidden sm:block">Financial overview, revenue, expenses, and statistics.</p>
+          <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-foreground mb-1 tracking-tight">Reports & Analytics</h1>
+          <p className="text-muted text-xs sm:text-sm lg:text-lg hidden sm:block">Financial overview, revenue, expenses, and statistics.</p>
         </div>
         <button
           onClick={() => {
@@ -174,19 +174,19 @@ export default function Reports() {
 
       <div className="space-y-6">
         {/* Financial Overview */}
-        <div className="bg-[#1a1d27] rounded-2xl shadow-sm border border-gray-700/50 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Financial Overview</h2>
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Financial Overview</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="p-4 bg-green-900/20 rounded-xl border border-green-800/30">
-              <p className="text-sm text-gray-400 mb-1">Total Revenue</p>
+              <p className="text-sm text-muted mb-1">Total Revenue</p>
               <p className="text-2xl font-bold text-green-400">${data.financialOverview.totalRevenue.toLocaleString()}</p>
             </div>
             <div className="p-4 bg-red-900/20 rounded-xl border border-red-800/30">
-              <p className="text-sm text-gray-400 mb-1">Total Expenses</p>
+              <p className="text-sm text-muted mb-1">Total Expenses</p>
               <p className="text-2xl font-bold text-red-400">${data.financialOverview.totalExpenses.toLocaleString()}</p>
             </div>
             <div className="p-4 bg-blue-900/20 rounded-xl border border-blue-800/30">
-              <p className="text-sm text-gray-400 mb-1">Profit</p>
+              <p className="text-sm text-muted mb-1">Profit</p>
               <p className={`text-2xl font-bold ${data.financialOverview.profit >= 0 ? 'text-blue-400' : 'text-red-400'}`}>
                 ${data.financialOverview.profit.toLocaleString()}
               </p>
@@ -195,59 +195,59 @@ export default function Reports() {
         </div>
 
         {/* Revenue by Month */}
-        <div className="bg-[#1a1d27] rounded-2xl shadow-sm border border-gray-700/50 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Revenue by Month (Last 6 Months)</h2>
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Revenue by Month (Last 6 Months)</h2>
           <div className="flex items-end gap-3 sm:gap-4 h-48">
             {data.revenueByMonth.map((m) => (
               <div key={m.month} className="flex-1 flex flex-col items-center gap-2">
-                <div className="w-full flex flex-col justify-end h-36 bg-gray-800 rounded-t-lg overflow-hidden">
+                <div className="w-full flex flex-col justify-end h-36 bg-accent rounded-t-lg overflow-hidden">
                   <div
                     className="w-full bg-gradient-to-t from-emerald-500 to-emerald-400 transition-all"
                     style={{ height: `${(m.revenue / maxRevenue) * 100}%`, minHeight: m.revenue > 0 ? '4px' : 0 }}
                   />
                 </div>
-                <p className="text-xs font-medium text-gray-400">{m.month}</p>
-                <p className="text-xs text-gray-500">${m.revenue.toLocaleString()}</p>
+                <p className="text-xs font-medium text-muted">{m.month}</p>
+                <p className="text-xs text-muted">${m.revenue.toLocaleString()}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* Expense Category Breakdown */}
-        <div className="bg-[#1a1d27] rounded-2xl shadow-sm border border-gray-700/50 p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Expenses by Category</h2>
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-4">Expenses by Category</h2>
           <div className="space-y-3">
             {data.expensesByCategory
               .filter((e) => e.amount > 0)
               .map((e) => (
                 <div key={e.category} className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-gray-300 w-24">{e.label}</span>
-                  <div className="flex-1 h-8 bg-gray-800 rounded-lg overflow-hidden">
+                  <span className="text-sm font-medium text-foreground w-24">{e.label}</span>
+                  <div className="flex-1 h-8 bg-accent rounded-lg overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-amber-500 to-amber-400 rounded-lg"
                       style={{ width: `${totalExpenseCat > 0 ? (e.amount / totalExpenseCat) * 100 : 0}%` }}
                     />
                   </div>
-                  <span className="text-sm font-semibold text-white w-20 text-right">${e.amount.toLocaleString()}</span>
+                  <span className="text-sm font-semibold text-foreground w-20 text-right">${e.amount.toLocaleString()}</span>
                 </div>
               ))}
             {data.expensesByCategory.every((e) => e.amount === 0) && (
-              <p className="text-gray-500 text-sm py-4">No expense data</p>
+              <p className="text-muted text-sm py-4">No expense data</p>
             )}
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Payment Methods */}
-          <div className="bg-[#1a1d27] rounded-2xl shadow-sm border border-gray-700/50 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Payments by Method</h2>
+          <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-foreground mb-4">Payments by Method</h2>
             <div className="space-y-3">
               {data.paymentMethods.map((pm) => (
-                <div key={pm.method} className="flex justify-between items-center py-2 border-b border-gray-700/50 last:border-0">
-                  <span className="text-sm font-medium text-gray-300">{pm.label}</span>
+                <div key={pm.method} className="flex justify-between items-center py-2 border-b border-border last:border-0">
+                  <span className="text-sm font-medium text-foreground">{pm.label}</span>
                   <div className="text-right">
-                    <span className="text-sm font-semibold text-white">${pm.amount.toLocaleString()}</span>
-                    <span className="text-xs text-gray-500 ml-2">({pm.count} payments)</span>
+                    <span className="text-sm font-semibold text-foreground">${pm.amount.toLocaleString()}</span>
+                    <span className="text-xs text-muted ml-2">({pm.count} payments)</span>
                   </div>
                 </div>
               ))}
@@ -255,20 +255,20 @@ export default function Reports() {
           </div>
 
           {/* Patient & Appointment Stats */}
-          <div className="bg-[#1a1d27] rounded-2xl shadow-sm border border-gray-700/50 p-6">
-            <h2 className="text-lg font-semibold text-white mb-4">Statistics</h2>
+          <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
+            <h2 className="text-lg font-semibold text-foreground mb-4">Statistics</h2>
             <div className="space-y-4">
               <div className="p-4 bg-blue-900/20 rounded-xl border border-blue-800/30">
-                <p className="text-sm text-gray-400">Total Patients</p>
+                <p className="text-sm text-muted">Total Patients</p>
                 <p className="text-2xl font-bold text-blue-400">{data.patientStats.total}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-300 mb-2">Appointments by Status</p>
+                <p className="text-sm font-medium text-foreground mb-2">Appointments by Status</p>
                 <div className="flex flex-wrap gap-2">
                   {Object.entries(data.appointmentsByStatus).map(([status, count]) => (
                     <span
                       key={status}
-                      className="px-3 py-1.5 bg-gray-700/50 rounded-lg text-sm font-medium text-gray-300 capitalize"
+                      className="px-3 py-1.5 bg-gray-700/50 rounded-lg text-sm font-medium text-foreground capitalize"
                     >
                       {status.replace('_', ' ')}: {count}
                     </span>
@@ -280,9 +280,9 @@ export default function Reports() {
         </div>
 
         {/* Backup & Data Export */}
-        <div className="bg-[#1a1d27] rounded-2xl shadow-sm border border-gray-700/50 p-6">
-          <h2 className="text-lg font-semibold text-white mb-2">Backup & Data Export</h2>
-          <p className="text-sm text-gray-400 mb-4">Export all clinic data (Patients, Doctors, Appointments, Payments, Expenses) to Excel format for backup or external use.</p>
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-6">
+          <h2 className="text-lg font-semibold text-foreground mb-2">Backup & Data Export</h2>
+          <p className="text-sm text-muted mb-4">Export all clinic data (Patients, Doctors, Appointments, Payments, Expenses) to Excel format for backup or external use.</p>
           <button
             onClick={handleExportExcel}
             disabled={excelLoading}

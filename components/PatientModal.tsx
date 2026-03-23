@@ -128,17 +128,17 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
     }
   }
 
-  const inputClass = "w-full px-4 py-3 border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-[#242732] text-gray-200 placeholder-gray-500"
-  const labelClass = "block text-sm font-medium text-gray-300 mb-2"
+  const inputClass = "w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-accent text-foreground placeholder-gray-500"
+  const labelClass = "block text-sm font-medium text-foreground mb-2"
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2 sm:p-4" onClick={onClose}>
-      <div className="bg-[#1a1d27] rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto border border-gray-700/50" onClick={(e) => e.stopPropagation()}>
-        <div className="p-4 sm:p-6 lg:p-8 border-b border-gray-700/50 flex items-center justify-between sticky top-0 bg-[#1a1d27] z-10">
-          <h2 className="text-xl sm:text-2xl font-semibold text-white">
+      <div className="bg-card rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto border border-border" onClick={(e) => e.stopPropagation()}>
+        <div className="p-4 sm:p-6 lg:p-8 border-b border-border flex items-center justify-between sticky top-0 bg-card z-10">
+          <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
             {patient ? 'Edit Patient' : 'Add New Patient'}
           </h2>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-700/50 transition-colors text-gray-400">
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-accent/50 transition-colors text-muted">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -205,8 +205,8 @@ export default function PatientModal({ patient, onClose, onSave }: PatientModalP
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t border-gray-700/50">
-            <button type="button" onClick={onClose} className="flex-1 px-5 py-3 bg-[#242732] border border-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-700/50 transition-all duration-200 font-medium">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 sm:pt-6 border-t border-border">
+            <button type="button" onClick={onClose} className="flex-1 px-5 py-3 bg-accent border border-border text-foreground rounded-xl hover:bg-accent/50 transition-all duration-200 font-medium">
               Cancel
             </button>
             <button type="submit" disabled={loading} className="flex-1 px-5 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all duration-200 font-medium shadow-sm disabled:opacity-50 disabled:cursor-not-allowed">

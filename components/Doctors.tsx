@@ -44,8 +44,8 @@ export default function Doctors() {
     <div className="w-full max-w-7xl mx-auto">
       <div className="mb-3 sm:mb-4 lg:mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-white mb-1 sm:mb-2 tracking-tight">Doctors</h1>
-          <p className="text-gray-400 text-xs sm:text-sm lg:text-lg hidden sm:block">Manage clinic doctors and specialists.</p>
+          <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-foreground mb-1 sm:mb-2 tracking-tight">Doctors</h1>
+          <p className="text-muted text-xs sm:text-sm lg:text-lg hidden sm:block">Manage clinic doctors and specialists.</p>
         </div>
         <button
           onClick={() => {
@@ -58,10 +58,10 @@ export default function Doctors() {
         </button>
       </div>
 
-      <div className="bg-[#1a1d27] rounded-xl sm:rounded-2xl shadow-sm border border-gray-700/50 overflow-hidden">
-        <div className="p-3 sm:p-4 lg:p-6 border-b border-gray-700/50">
+      <div className="bg-card rounded-xl sm:rounded-2xl shadow-sm border border-border overflow-hidden">
+        <div className="p-3 sm:p-4 lg:p-6 border-b border-border">
           <div className="relative">
-            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -71,7 +71,7 @@ export default function Doctors() {
               placeholder="Search doctors by name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm bg-[#242732] text-gray-200 placeholder-gray-500"
+              className="w-full pl-10 pr-4 py-2.5 border border-border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm bg-accent text-foreground placeholder-gray-500"
             />
           </div>
         </div>
@@ -79,23 +79,23 @@ export default function Doctors() {
         <div className="overflow-x-auto">
           {/* Desktop Table */}
           <table className="hidden lg:table w-full">
-            <thead className="bg-[#242732]">
+            <thead className="bg-accent">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Name</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Phone</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Specialization</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase">Name</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase">Phone</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase">Specialization</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-muted uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700/50">
               {filteredDoctors.map((doctor) => (
-                <tr key={doctor.id} className="hover:bg-[#242732]/50 transition-colors">
+                <tr key={doctor.id} className="hover:bg-accent/50 transition-colors">
                   <td className="px-6 py-4">
-                    <div className="font-medium text-white">{doctor.name}</div>
-                    <div className="text-sm text-gray-500">{doctor.email}</div>
+                    <div className="font-medium text-foreground">{doctor.name}</div>
+                    <div className="text-sm text-muted">{doctor.email}</div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-300">{doctor.phone}</td>
-                  <td className="px-6 py-4 text-sm text-gray-300">{doctor.specialization || '-'}</td>
+                  <td className="px-6 py-4 text-sm text-foreground">{doctor.phone}</td>
+                  <td className="px-6 py-4 text-sm text-foreground">{doctor.specialization || '-'}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <button
@@ -131,7 +131,7 @@ export default function Doctors() {
           {/* Mobile Cards */}
           <div className="lg:hidden divide-y divide-gray-700/50">
             {filteredDoctors.length === 0 ? (
-              <div className="p-8 text-center text-gray-400">
+              <div className="p-8 text-center text-muted">
                 <div className="text-4xl mb-2">👨‍⚕️</div>
                 <p className="text-sm">No doctors yet. Add your first doctor.</p>
               </div>
@@ -139,10 +139,10 @@ export default function Doctors() {
               filteredDoctors.map((doctor) => (
                 <div key={doctor.id} className="p-4 flex items-center justify-between">
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-white truncate">{doctor.name}</div>
-                    <div className="text-xs text-gray-500 truncate">{doctor.phone}</div>
+                    <div className="font-medium text-foreground truncate">{doctor.name}</div>
+                    <div className="text-xs text-muted truncate">{doctor.phone}</div>
                     {doctor.specialization && (
-                      <div className="text-xs text-gray-400 mt-0.5">{doctor.specialization}</div>
+                      <div className="text-xs text-muted mt-0.5">{doctor.specialization}</div>
                     )}
                   </div>
                   <div className="flex gap-2 ml-2">

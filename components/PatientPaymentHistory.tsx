@@ -113,19 +113,19 @@ export default function PatientPaymentHistory({ patientId, patientName, patientP
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-[60] p-4" onClick={onClose}>
-      <div className="bg-[#1a1d27] rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-gray-700/50" onClick={(e) => e.stopPropagation()}>
-        <div className="p-6 border-b border-gray-700/50 flex items-center justify-between flex-shrink-0">
+      <div className="bg-card rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col border border-border" onClick={(e) => e.stopPropagation()}>
+        <div className="p-6 border-b border-border flex items-center justify-between flex-shrink-0">
           <div>
-            <h2 className="text-xl font-semibold text-white">Payment History</h2>
-            <p className="text-gray-400 mt-0.5">{patientName}{patientPhone ? ` · ${patientPhone}` : ''}</p>
+            <h2 className="text-xl font-semibold text-foreground">Payment History</h2>
+            <p className="text-muted mt-0.5">{patientName}{patientPhone ? ` · ${patientPhone}` : ''}</p>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-700/50 text-gray-400">✕</button>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-accent/50 text-muted">✕</button>
         </div>
         <div className="flex-1 overflow-y-auto p-6">
           {loading ? (
-            <p className="text-gray-400 text-center py-8">Loading...</p>
+            <p className="text-muted text-center py-8">Loading...</p>
           ) : payments.length === 0 && (patientTotalDue == null || patientTotalDue === 0) ? (
-            <p className="text-gray-400 text-center py-8">No payments or balance for this patient.</p>
+            <p className="text-muted text-center py-8">No payments or balance for this patient.</p>
           ) : (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -145,10 +145,10 @@ export default function PatientPaymentHistory({ patientId, patientName, patientP
 
               <div className="space-y-3">
                 {entries.map((e, idx) => (
-                  <div key={`${e.payment.id}-${e.transactionIndex ?? 'main'}-${idx}`} className="border border-gray-700/50 rounded-xl p-4 flex items-center justify-between gap-2 flex-wrap">
+                  <div key={`${e.payment.id}-${e.transactionIndex ?? 'main'}-${idx}`} className="border border-border rounded-xl p-4 flex items-center justify-between gap-2 flex-wrap">
                     <div className="min-w-0">
-                      <p className="font-medium text-white">${e.amount.toFixed(2)}</p>
-                      <p className="text-sm text-gray-400">
+                      <p className="font-medium text-foreground">${e.amount.toFixed(2)}</p>
+                      <p className="text-sm text-muted">
                         {e.paymentMethod ? PAYMENT_METHOD_LABELS[e.paymentMethod] || e.paymentMethod : '—'} · {e.createdAt}
                       </p>
                     </div>
@@ -157,7 +157,7 @@ export default function PatientPaymentHistory({ patientId, patientName, patientP
                         Receipt
                       </button>
                       {onEditPayment && e.transactionIndex == null && (
-                        <button type="button" onClick={() => onEditPayment(e.payment)} className="p-1.5 rounded-lg hover:bg-gray-700/50 text-gray-400" title="Edit">
+                        <button type="button" onClick={() => onEditPayment(e.payment)} className="p-1.5 rounded-lg hover:bg-accent/50 text-muted" title="Edit">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                         </button>
                       )}

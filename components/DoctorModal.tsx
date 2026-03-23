@@ -41,33 +41,33 @@ export default function DoctorModal({ doctor, onClose, onSave }: DoctorModalProp
     } finally { setLoading(false) }
   }
 
-  const inputClass = "w-full px-4 py-3 border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-[#242732] text-gray-200 placeholder-gray-500"
+  const inputClass = "w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none bg-accent text-foreground placeholder-gray-500"
 
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-[#1a1d27] rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-gray-700/50" onClick={(e) => e.stopPropagation()}>
-        <div className="p-6 border-b border-gray-700/50 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-white">{doctor ? 'Edit Doctor' : 'Add Doctor'}</h2>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-700/50 text-gray-400">✕</button>
+      <div className="bg-card rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto border border-border" onClick={(e) => e.stopPropagation()}>
+        <div className="p-6 border-b border-border flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-foreground">{doctor ? 'Edit Doctor' : 'Add Doctor'}</h2>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-accent/50 text-muted">✕</button>
         </div>
         <form onSubmit={handleSubmit} className="p-6">
           {error && <div className="mb-4 p-3 bg-red-900/30 border border-red-800/50 text-red-300 rounded-xl text-sm">{error}</div>}
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Name *</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Name *</label>
               <input type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Phone *</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Phone *</label>
               <input type="tel" required value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} className={inputClass} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Specialization</label>
+              <label className="block text-sm font-medium text-foreground mb-2">Specialization</label>
               <input type="text" value={formData.specialization || ''} onChange={(e) => setFormData({ ...formData, specialization: e.target.value })} placeholder="e.g., General, Dentist" className={inputClass} />
             </div>
           </div>
           <div className="flex gap-3 mt-6">
-            <button type="button" onClick={onClose} className="flex-1 px-5 py-3 border border-gray-700/50 rounded-xl text-gray-300 hover:bg-gray-700/50 font-medium">Cancel</button>
+            <button type="button" onClick={onClose} className="flex-1 px-5 py-3 border border-border rounded-xl text-foreground hover:bg-accent/50 font-medium">Cancel</button>
             <button type="submit" disabled={loading} className="flex-1 px-5 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium disabled:opacity-50">{loading ? 'Saving...' : 'Save'}</button>
           </div>
         </form>

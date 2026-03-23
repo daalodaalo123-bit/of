@@ -47,8 +47,8 @@ export default function Expenses() {
     <div className="w-full max-w-7xl mx-auto">
       <div className="mb-3 sm:mb-4 lg:mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-white mb-1 sm:mb-2 tracking-tight">Expenses</h1>
-          <p className="text-gray-400 text-xs sm:text-sm lg:text-lg hidden sm:block">Track clinic expenses and costs.</p>
+          <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-foreground mb-1 sm:mb-2 tracking-tight">Expenses</h1>
+          <p className="text-muted text-xs sm:text-sm lg:text-lg hidden sm:block">Track clinic expenses and costs.</p>
         </div>
         <button
           onClick={() => { setSelectedExpense(null); setIsModalOpen(true) }}
@@ -58,13 +58,13 @@ export default function Expenses() {
         </button>
       </div>
 
-      <div className="bg-[#1a1d27] rounded-xl sm:rounded-2xl shadow-sm border border-gray-700/50 overflow-hidden">
-        <div className="p-3 sm:p-4 lg:p-6 border-b border-gray-700/50 flex flex-col sm:flex-row gap-3 sm:gap-4">
+      <div className="bg-card rounded-xl sm:rounded-2xl shadow-sm border border-border overflow-hidden">
+        <div className="p-3 sm:p-4 lg:p-6 border-b border-border flex flex-col sm:flex-row gap-3 sm:gap-4">
           <div className="flex-1">
             <select
               value={categoryFilter}
               onChange={(e) => setCategoryFilter(e.target.value)}
-              className="w-full sm:max-w-xs px-4 py-2.5 border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm bg-[#242732] text-gray-200"
+              className="w-full sm:max-w-xs px-4 py-2.5 border border-border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none text-sm bg-accent text-foreground"
             >
               <option value="">All categories</option>
               {Object.entries(CATEGORY_LABELS).map(([value, label]) => (
@@ -72,7 +72,7 @@ export default function Expenses() {
               ))}
             </select>
           </div>
-          <div className="flex items-center gap-2 text-sm font-medium text-gray-300">
+          <div className="flex items-center gap-2 text-sm font-medium text-foreground">
             <span>Total:</span>
             <span className="text-rose-400 text-lg">${totalAmount.toFixed(2)}</span>
           </div>
@@ -80,25 +80,25 @@ export default function Expenses() {
 
         <div className="overflow-x-auto">
           <table className="hidden lg:table w-full">
-            <thead className="bg-[#242732]">
+            <thead className="bg-accent">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Date</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Category</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Description</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Amount</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase">Date</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase">Category</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase">Description</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase">Amount</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-muted uppercase">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700/50">
               {expenses.map((e) => (
-                <tr key={e.id} className="hover:bg-[#242732]/50 transition-colors">
-                  <td className="px-6 py-4 text-gray-200">{new Date(e.expenseDate).toLocaleDateString()}</td>
+                <tr key={e.id} className="hover:bg-accent/50 transition-colors">
+                  <td className="px-6 py-4 text-foreground">{new Date(e.expenseDate).toLocaleDateString()}</td>
                   <td className="px-6 py-4">
-                    <span className="inline-flex px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-700/50 text-gray-300">
+                    <span className="inline-flex px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-700/50 text-foreground">
                       {CATEGORY_LABELS[e.category] || e.category}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-400 max-w-[200px] truncate">{e.description || '-'}</td>
+                  <td className="px-6 py-4 text-muted max-w-[200px] truncate">{e.description || '-'}</td>
                   <td className="px-6 py-4 font-semibold text-rose-400">${e.amount.toFixed(2)}</td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex justify-end gap-2">
@@ -121,7 +121,7 @@ export default function Expenses() {
 
           <div className="lg:hidden divide-y divide-gray-700/50">
             {expenses.length === 0 ? (
-              <div className="p-8 text-center text-gray-400">
+              <div className="p-8 text-center text-muted">
                 <div className="text-4xl mb-2">📋</div>
                 <p className="text-sm">No expenses yet. Add an expense.</p>
               </div>
@@ -129,9 +129,9 @@ export default function Expenses() {
               expenses.map((e) => (
                 <div key={e.id} className="p-4 flex items-center justify-between">
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-white">{CATEGORY_LABELS[e.category] || e.category}</div>
-                    <div className="text-xs text-gray-500 mt-0.5">{new Date(e.expenseDate).toLocaleDateString()}</div>
-                    {e.description && <div className="text-xs text-gray-400 truncate mt-0.5">{e.description}</div>}
+                    <div className="font-medium text-foreground">{CATEGORY_LABELS[e.category] || e.category}</div>
+                    <div className="text-xs text-muted mt-0.5">{new Date(e.expenseDate).toLocaleDateString()}</div>
+                    {e.description && <div className="text-xs text-muted truncate mt-0.5">{e.description}</div>}
                   </div>
                   <div className="flex items-center gap-2 ml-2">
                     <span className="font-semibold text-rose-400">${e.amount.toFixed(2)}</span>

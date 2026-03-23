@@ -91,13 +91,13 @@ export default function Patients() {
     <div className="w-full max-w-7xl mx-auto">
           <div className="mb-3 sm:mb-4 lg:mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-white mb-1 sm:mb-2 tracking-tight">Patients Management</h1>
-          <p className="text-gray-400 text-xs sm:text-sm lg:text-lg hidden sm:block">Manage patient records and information.</p>
+          <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-foreground mb-1 sm:mb-2 tracking-tight">Patients Management</h1>
+          <p className="text-muted text-xs sm:text-sm lg:text-lg hidden sm:block">Manage patient records and information.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <button
             onClick={() => setIsImportOpen(true)}
-            className="px-4 lg:px-5 py-2 lg:py-2.5 bg-[#1a1d27] border border-gray-700/50 rounded-xl text-gray-300 font-medium hover:bg-[#242732] transition-all duration-200 shadow-sm text-xs lg:text-sm"
+            className="px-4 lg:px-5 py-2 lg:py-2.5 bg-card border border-border rounded-xl text-foreground font-medium hover:bg-accent transition-all duration-200 shadow-sm text-xs lg:text-sm"
           >
             Import Excel
           </button>
@@ -113,10 +113,10 @@ export default function Patients() {
         </div>
       </div>
 
-      <div className="bg-[#1a1d27] rounded-2xl shadow-sm border border-gray-700/50 overflow-hidden">
-        <div className="p-4 lg:p-6 border-b border-gray-700/50">
+      <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
+        <div className="p-4 lg:p-6 border-b border-border">
           <div className="relative">
-            <div className="absolute left-3 lg:left-4 top-1/2 transform -translate-y-1/2 text-gray-500">
+            <div className="absolute left-3 lg:left-4 top-1/2 transform -translate-y-1/2 text-muted">
               <svg className="w-4 h-4 lg:w-5 lg:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -126,7 +126,7 @@ export default function Patients() {
               placeholder="Search patients by name..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 lg:pl-12 pr-4 py-2.5 lg:py-3 border border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-[#242732] text-gray-200 placeholder-gray-500 text-sm lg:text-base"
+              className="w-full pl-10 lg:pl-12 pr-4 py-2.5 lg:py-3 border border-border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all duration-200 bg-accent text-foreground placeholder-gray-500 text-sm lg:text-base"
             />
           </div>
         </div>
@@ -135,10 +135,10 @@ export default function Patients() {
           {filteredPatients.length === 0 ? (
             <div className="text-center py-20">
               <div className="text-5xl mb-4">👥</div>
-              <h3 className="text-lg font-semibold text-white mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 {searchTerm ? 'No patients found' : 'No patients yet'}
               </h3>
-              <p className="text-gray-400">
+              <p className="text-muted">
                 {searchTerm ? 'Try a different search term' : 'Add your first patient to get started'}
               </p>
             </div>
@@ -147,27 +147,27 @@ export default function Patients() {
               {/* Desktop Table */}
               <div className="hidden lg:block overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-[#242732]">
+                  <thead className="bg-accent">
                     <tr>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Name</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Phone</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Doctor</th>
-                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase">Remaining Balance</th>
-                      <th className="px-6 py-4 text-left text-xs font-semibold text-gray-400 uppercase">Total Due</th>
-                      <th className="px-6 py-4 text-right text-xs font-semibold text-gray-400 uppercase">Actions</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase">Name</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase">Phone</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase">Doctor</th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-muted uppercase">Remaining Balance</th>
+                      <th className="px-6 py-4 text-left text-xs font-semibold text-muted uppercase">Total Due</th>
+                      <th className="px-6 py-4 text-right text-xs font-semibold text-muted uppercase">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-700/50">
                     {filteredPatients.map((patient) => (
-                      <tr key={patient.id} className="hover:bg-[#242732]/50 transition-colors">
+                      <tr key={patient.id} className="hover:bg-accent/50 transition-colors">
                         <td className="px-6 py-4">
-                          <div className="font-medium text-white">{patient.name}</div>
-                          <div className="text-sm text-gray-500">{patient.email || '-'}</div>
+                          <div className="font-medium text-foreground">{patient.name}</div>
+                          <div className="text-sm text-muted">{patient.email || '-'}</div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-300">{patient.phone}</td>
-                        <td className="px-6 py-4 text-sm text-gray-300">{patient.doctorName || '-'}</td>
-                        <td className="px-6 py-4 text-right text-sm font-medium tabular-nums text-gray-200">${(patient.remainingBalance ?? 0).toFixed(2)}</td>
-                        <td className="px-6 py-4 text-sm font-medium text-gray-200">${(patient.totalDue || 0).toFixed(2)}</td>
+                        <td className="px-6 py-4 text-sm text-foreground">{patient.phone}</td>
+                        <td className="px-6 py-4 text-sm text-foreground">{patient.doctorName || '-'}</td>
+                        <td className="px-6 py-4 text-right text-sm font-medium tabular-nums text-foreground">${(patient.remainingBalance ?? 0).toFixed(2)}</td>
+                        <td className="px-6 py-4 text-sm font-medium text-foreground">${(patient.totalDue || 0).toFixed(2)}</td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex justify-end gap-2">
                             <button onClick={() => handleEdit(patient)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-900/40 text-blue-400" title="Edit">
@@ -187,17 +187,17 @@ export default function Patients() {
               {/* Mobile Cards */}
               <div className="lg:hidden grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {filteredPatients.map((patient) => (
-                  <div key={patient.id} className="p-4 bg-[#242732] rounded-xl border border-gray-700/50">
+                  <div key={patient.id} className="p-4 bg-accent rounded-xl border border-border">
                     <div className="flex items-center gap-3 mb-2">
                       <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center text-white font-semibold text-sm flex-shrink-0">
                         {patient.name.charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-semibold text-white truncate">{patient.name}</h3>
-                        <p className="text-xs text-gray-500 truncate">{patient.phone}</p>
-                        {patient.doctorName && <p className="text-xs text-gray-400 mt-0.5">Dr: {patient.doctorName}</p>}
+                        <h3 className="font-semibold text-foreground truncate">{patient.name}</h3>
+                        <p className="text-xs text-muted truncate">{patient.phone}</p>
+                        {patient.doctorName && <p className="text-xs text-muted mt-0.5">Dr: {patient.doctorName}</p>}
                         {((patient.remainingBalance ?? 0) > 0 || (patient.totalDue ?? 0) > 0) && (
-                          <p className="text-xs font-medium text-gray-300 mt-0.5">
+                          <p className="text-xs font-medium text-foreground mt-0.5">
                             Balance: ${(patient.remainingBalance ?? 0).toFixed(2)}
                             {(patient.totalDue ?? 0) > 0 && ` · Due: $${patient.totalDue!.toFixed(2)}`}
                           </p>
@@ -205,8 +205,8 @@ export default function Patients() {
                       </div>
                     </div>
                     <div className="flex gap-2 mt-2">
-                      <button onClick={() => handleEdit(patient)} className="flex-1 px-2 py-1.5 bg-[#1a1d27] border border-gray-700/50 text-gray-300 rounded-lg text-xs font-medium">Edit</button>
-                      <button onClick={() => handleDelete(patient.id)} className="flex-1 px-2 py-1.5 bg-[#1a1d27] border border-red-900/50 text-red-400 rounded-lg text-xs font-medium">Delete</button>
+                      <button onClick={() => handleEdit(patient)} className="flex-1 px-2 py-1.5 bg-card border border-border text-foreground rounded-lg text-xs font-medium">Edit</button>
+                      <button onClick={() => handleDelete(patient.id)} className="flex-1 px-2 py-1.5 bg-card border border-red-900/50 text-red-400 rounded-lg text-xs font-medium">Delete</button>
                     </div>
                   </div>
                 ))}

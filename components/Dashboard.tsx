@@ -70,15 +70,15 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
   const statCards = [
     { label: 'Total Patients', value: stats.patientCount, icon: '👥', color: 'from-blue-500 to-blue-600', isRevenue: false },
     { label: 'Scheduled', value: stats.appointmentCount, icon: '📅', color: 'from-green-500 to-green-600', isRevenue: false },
-    { label: "Today's Appointments", value: stats.todayAppointments, icon: '⏰', color: 'from-orange-500 to-orange-600', isRevenue: false },
+    { label: "Today's Appointments", value: stats.todayAppointments, icon: '⏰', color: 'from-rose-500 to-rose-600', isRevenue: false },
     { label: 'Revenue', value: `$${stats.totalRevenue.toLocaleString()}`, icon: '💰', color: 'from-purple-500 to-purple-600', isRevenue: true },
   ]
 
   return (
     <div className="w-full max-w-7xl mx-auto">
       <div className="mb-3 sm:mb-4 lg:mb-10">
-        <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-white mb-1 tracking-tight">Dashboard</h1>
-        <p className="text-gray-400 text-xs sm:text-sm lg:text-lg hidden sm:block">Welcome back. Here's what's happening today.</p>
+        <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-foreground mb-1 tracking-tight">Dashboard</h1>
+        <p className="text-muted text-xs sm:text-sm lg:text-lg hidden sm:block">Welcome back. Here's what's happening today.</p>
       </div>
 
       {/* Revenue Insights - Prominent Card */}
@@ -93,11 +93,11 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                   <div className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 rounded-xl flex items-center justify-center">
                     <span className="text-2xl">📈</span>
                   </div>
-                  <span className="text-white/90 text-sm font-medium">Revenue Insights</span>
+                  <span className="text-foreground/90 text-sm font-medium">Revenue Insights</span>
                 </div>
                 <button
                   onClick={() => setShowRevenueAmounts((v) => !v)}
-                  className="p-2 rounded-lg hover:bg-white/20 transition-colors text-white/80 hover:text-white"
+                  className="p-2 rounded-lg hover:bg-white/20 transition-colors text-foreground/80 hover:text-foreground"
                   title={showRevenueAmounts ? 'Hide amounts' : 'Show amounts'}
                 >
                   {showRevenueAmounts ? (
@@ -114,8 +114,8 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
               </div>
               <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
                 <div>
-                  <p className="text-white/80 text-sm mb-1">This Month</p>
-                  <p className="text-3xl sm:text-4xl font-bold text-white">
+                  <p className="text-foreground/80 text-sm mb-1">This Month</p>
+                  <p className="text-3xl sm:text-4xl font-bold text-foreground">
                     {showRevenueAmounts ? `$${analytics.revenueInsights.thisMonthRevenue.toLocaleString()}` : '••••••'}
                   </p>
                   <div className="flex items-center gap-2 mt-2">
@@ -128,14 +128,14 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                         '•••'
                       )}
                     </span>
-                    <span className="text-white/70 text-xs">
+                    <span className="text-foreground/70 text-xs">
                       vs last month {showRevenueAmounts ? `($${analytics.revenueInsights.lastMonthRevenue.toLocaleString()})` : '(••••••)'}
                     </span>
                   </div>
                 </div>
                 <div className="text-right">
-                  <p className="text-white/60 text-xs">Last Month</p>
-                  <p className="text-xl font-semibold text-white/90">
+                  <p className="text-foreground/60 text-xs">Last Month</p>
+                  <p className="text-xl font-semibold text-foreground/90">
                     {showRevenueAmounts ? `$${analytics.revenueInsights.lastMonthRevenue.toLocaleString()}` : '••••••'}
                   </p>
                 </div>
@@ -149,7 +149,7 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
         {statCards.map((card, index) => (
           <div
             key={index}
-            className="bg-[#1a1d27] rounded-lg sm:rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm border border-gray-700/50 hover:border-gray-600/50 transition-all duration-200"
+            className="bg-card rounded-lg sm:rounded-xl lg:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-sm border border-border hover:border-gray-600/50 transition-all duration-200"
           >
             <div className="flex items-center justify-between mb-2 sm:mb-3 lg:mb-4">
               <div className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-gradient-to-br ${card.color} rounded-lg sm:rounded-xl flex items-center justify-center text-base sm:text-lg lg:text-xl shadow-sm`}>
@@ -158,7 +158,7 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
               {card.isRevenue && (
                 <button
                   onClick={() => setShowRevenueAmounts((v) => !v)}
-                  className="p-1.5 rounded-lg hover:bg-gray-700/50 transition-colors text-gray-500 hover:text-gray-300"
+                  className="p-1.5 rounded-lg hover:bg-accent/50 transition-colors text-muted hover:text-foreground"
                   title={showRevenueAmounts ? 'Hide amount' : 'Show amount'}
                 >
                   {showRevenueAmounts ? (
@@ -174,10 +174,10 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                 </button>
               )}
             </div>
-            <div className="text-lg sm:text-xl lg:text-3xl font-semibold text-white mb-0.5 sm:mb-1">
+            <div className="text-lg sm:text-xl lg:text-3xl font-semibold text-foreground mb-0.5 sm:mb-1">
               {card.isRevenue && !showRevenueAmounts ? '••••••' : card.value}
             </div>
-            <div className="text-[10px] sm:text-xs lg:text-sm text-gray-400 font-medium leading-tight">{card.label}</div>
+            <div className="text-[10px] sm:text-xs lg:text-sm text-muted font-medium leading-tight">{card.label}</div>
           </div>
         ))}
       </div>
@@ -185,8 +185,8 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
       {/* Outstanding Balances & Upcoming Appointments - Side by Side */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
         {/* Outstanding Balances */}
-        <div className="bg-[#1a1d27] rounded-2xl shadow-lg border border-gray-700/50 overflow-hidden">
-          <div className="bg-gradient-to-r from-amber-600 to-orange-700 p-4 sm:p-5">
+        <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
+          <div className="bg-gradient-to-r from-rose-500 to-rose-700 p-4 sm:p-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
@@ -209,31 +209,31 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
             {analytics?.outstandingBalances?.topPatients?.length ? (
               <div className="space-y-2">
                 {analytics.outstandingBalances.topPatients.slice(0, 6).map((p, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 bg-amber-900/20 rounded-xl border border-amber-800/30">
+                  <div key={i} className="flex items-center justify-between p-3 bg-rose-500/10 dark:bg-rose-500/20 rounded-xl border border-rose-500/20">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-amber-700/40 rounded-lg flex items-center justify-center text-amber-300 font-semibold text-sm">
+                      <div className="w-8 h-8 bg-rose-500/20 rounded-lg flex items-center justify-center text-rose-700 dark:text-rose-300 font-semibold text-sm">
                         {p.patientName.charAt(0)}
                       </div>
                       <div>
-                        <p className="font-medium text-gray-200 text-sm truncate max-w-[120px] sm:max-w-[180px]">{p.patientName}</p>
-                        <p className="text-xs text-gray-500">Total: ${p.totalAmount.toFixed(0)}</p>
+                        <p className="font-medium text-foreground text-sm truncate max-w-[120px] sm:max-w-[180px]">{p.patientName}</p>
+                        <p className="text-xs text-muted">Total: ${p.totalAmount.toFixed(0)}</p>
                       </div>
                     </div>
-                    <span className="font-bold text-amber-400">${p.remainingBalance.toFixed(0)}</span>
+                    <span className="font-bold text-rose-600 dark:text-rose-400">${p.remainingBalance.toFixed(0)}</span>
                   </div>
                 ))}
               </div>
             ) : (
               <div className="text-center py-8">
                 <p className="text-4xl mb-2">✓</p>
-                <p className="text-gray-400 text-sm">All payments collected</p>
+                <p className="text-muted text-sm">All payments collected</p>
               </div>
             )}
           </div>
         </div>
 
         {/* Upcoming Appointments */}
-        <div className="bg-[#1a1d27] rounded-2xl shadow-lg border border-gray-700/50 overflow-hidden">
+        <div className="bg-card rounded-2xl shadow-lg border border-border overflow-hidden">
           <div className="bg-gradient-to-r from-blue-600 to-indigo-700 p-4 sm:p-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -241,11 +241,11 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                   <span className="text-2xl">📅</span>
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white">Upcoming Appointments</h2>
-                  <p className="text-white/80 text-sm">Next 7 days</p>
+                  <h2 className="text-lg font-bold text-foreground">Upcoming Appointments</h2>
+                  <p className="text-foreground/80 text-sm">Next 7 days</p>
                 </div>
               </div>
-              <span className="px-3 py-1 bg-white/20 rounded-full text-white font-semibold text-sm">
+              <span className="px-3 py-1 bg-white/20 rounded-full text-foreground font-semibold text-sm">
                 {analytics?.upcomingAppointments?.length || 0}
               </span>
             </div>
@@ -264,8 +264,8 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-200 text-sm truncate">{apt.patientName}</p>
-                      <p className="text-xs text-gray-500">{apt.timeSlot}{apt.treatmentType ? ` • ${apt.treatmentType}` : ''}</p>
+                      <p className="font-medium text-foreground text-sm truncate">{apt.patientName}</p>
+                      <p className="text-xs text-muted">{apt.timeSlot}{apt.treatmentType ? ` • ${apt.treatmentType}` : ''}</p>
                     </div>
                   </div>
                 ))}
@@ -273,7 +273,7 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
             ) : (
               <div className="text-center py-8">
                 <p className="text-4xl mb-2">📆</p>
-                <p className="text-gray-400 text-sm">No upcoming appointments</p>
+                <p className="text-muted text-sm">No upcoming appointments</p>
               </div>
             )}
           </div>
@@ -282,9 +282,9 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
 
       {/* Revenue Chart */}
       {analytics && analytics.revenueByMonth.length > 0 && (
-        <div className="bg-[#1a1d27] rounded-xl sm:rounded-2xl shadow-sm border border-gray-700/50 overflow-hidden mb-4 sm:mb-6">
-          <div className="p-3 sm:p-4 lg:p-6 border-b border-gray-700/50">
-            <h2 className="text-base sm:text-lg font-semibold text-white">Revenue (Last 6 Months)</h2>
+        <div className="bg-card rounded-xl sm:rounded-2xl shadow-sm border border-border overflow-hidden mb-4 sm:mb-6">
+          <div className="p-3 sm:p-4 lg:p-6 border-b border-border">
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">Revenue (Last 6 Months)</h2>
           </div>
           <div className="p-4 lg:p-6">
             <div className="flex items-end gap-2 sm:gap-3 h-32 sm:h-40">
@@ -293,16 +293,16 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                 const h = max > 0 ? (m.revenue / max) * 100 : 0
                 return (
                   <div key={i} className="flex-1 flex flex-col items-center gap-1">
-                    <span className="text-[10px] sm:text-xs font-medium text-gray-400">
+                    <span className="text-[10px] sm:text-xs font-medium text-muted">
                       {showRevenueAmounts ? `$${m.revenue}` : '••••'}
                     </span>
-                    <div className="w-full bg-gray-800 rounded-t-lg overflow-hidden" style={{ height: '80px' }}>
+                    <div className="w-full bg-accent rounded-t-lg overflow-hidden" style={{ height: '80px' }}>
                       <div
                         className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t-lg transition-all duration-500"
                         style={{ height: `${Math.max(h, 2)}%` }}
                       />
                     </div>
-                    <span className="text-[10px] sm:text-xs text-gray-500">{m.month}</span>
+                    <span className="text-[10px] sm:text-xs text-muted">{m.month}</span>
                   </div>
                 )
               })}
@@ -314,9 +314,9 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
       {/* Payment Methods & Appointments Charts */}
       {analytics && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-          <div className="bg-[#1a1d27] rounded-xl sm:rounded-2xl shadow-sm border border-gray-700/50 overflow-hidden">
-            <div className="p-3 sm:p-4 border-b border-gray-700/50">
-              <h2 className="text-base sm:text-lg font-semibold text-white">Payments by Method</h2>
+          <div className="bg-card rounded-xl sm:rounded-2xl shadow-sm border border-border overflow-hidden">
+            <div className="p-3 sm:p-4 border-b border-border">
+              <h2 className="text-base sm:text-lg font-semibold text-foreground">Payments by Method</h2>
             </div>
             <div className="p-4 lg:p-6 space-y-3">
               {[
@@ -329,10 +329,10 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                 return (
                   <div key={key}>
                     <div className="flex justify-between text-xs sm:text-sm mb-1">
-                      <span className="text-gray-300">{label}</span>
-                      <span className="font-medium text-gray-200">{showRevenueAmounts ? `$${d.amount.toFixed(0)}` : '••••'} ({d.count})</span>
+                      <span className="text-foreground">{label}</span>
+                      <span className="font-medium text-foreground">{showRevenueAmounts ? `$${d.amount.toFixed(0)}` : '••••'} ({d.count})</span>
                     </div>
-                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div className="h-2 bg-accent rounded-full overflow-hidden">
                       <div
                         className={`h-full ${color} rounded-full transition-all duration-500`}
                         style={{
@@ -349,9 +349,9 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
             </div>
           </div>
 
-          <div className="bg-[#1a1d27] rounded-xl sm:rounded-2xl shadow-sm border border-gray-700/50 overflow-hidden">
-            <div className="p-3 sm:p-4 border-b border-gray-700/50">
-              <h2 className="text-base sm:text-lg font-semibold text-white">Appointments by Status</h2>
+          <div className="bg-card rounded-xl sm:rounded-2xl shadow-sm border border-border overflow-hidden">
+            <div className="p-3 sm:p-4 border-b border-border">
+              <h2 className="text-base sm:text-lg font-semibold text-foreground">Appointments by Status</h2>
             </div>
             <div className="p-4 lg:p-6 space-y-3">
               {[
@@ -366,10 +366,10 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
                 return (
                   <div key={key}>
                     <div className="flex justify-between text-xs sm:text-sm mb-1">
-                      <span className="text-gray-300">{label}</span>
-                      <span className="font-medium text-gray-200">{count}</span>
+                      <span className="text-foreground">{label}</span>
+                      <span className="font-medium text-foreground">{count}</span>
                     </div>
-                    <div className="h-2 bg-gray-800 rounded-full overflow-hidden">
+                    <div className="h-2 bg-accent rounded-full overflow-hidden">
                       <div
                         className={`h-full ${color} rounded-full transition-all duration-500`}
                         style={{ width: `${Math.max(pct, 1)}%` }}
@@ -383,15 +383,15 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
         </div>
       )}
 
-      <div className="bg-[#1a1d27] rounded-xl sm:rounded-2xl shadow-sm border border-gray-700/50 overflow-hidden">
-        <div className="p-3 sm:p-4 lg:p-6 border-b border-gray-700/50 flex items-center justify-between">
-          <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-white">Today's Appointments</h2>
+      <div className="bg-card rounded-xl sm:rounded-2xl shadow-sm border border-border overflow-hidden">
+        <div className="p-3 sm:p-4 lg:p-6 border-b border-border flex items-center justify-between">
+          <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-foreground">Today's Appointments</h2>
           <button
             onClick={() => {
               onRefresh()
               loadTodayAppointments()
             }}
-            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-700/50 transition-colors text-gray-500 hover:text-gray-300"
+            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-accent/50 transition-colors text-muted hover:text-foreground"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -402,19 +402,19 @@ export default function Dashboard({ stats, onRefresh }: DashboardProps) {
           {todayAppointments.length === 0 ? (
             <div className="text-center py-8 sm:py-12 lg:py-16">
               <div className="text-3xl sm:text-4xl lg:text-5xl mb-3 sm:mb-4">📅</div>
-              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-white mb-1 sm:mb-2">No appointments today</h3>
-              <p className="text-xs sm:text-sm lg:text-base text-gray-400">All clear for today.</p>
+              <h3 className="text-sm sm:text-base lg:text-lg font-semibold text-foreground mb-1 sm:mb-2">No appointments today</h3>
+              <p className="text-xs sm:text-sm lg:text-base text-muted">All clear for today.</p>
             </div>
           ) : (
             <div className="space-y-2 sm:space-y-2 lg:space-y-3">
               {todayAppointments.map((apt: any) => (
                 <div
                   key={apt.id}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2.5 sm:p-3 lg:p-4 bg-[#242732] rounded-lg sm:rounded-xl border border-gray-700/50 hover:border-gray-600/50 transition-all duration-200 gap-2"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-2.5 sm:p-3 lg:p-4 bg-accent rounded-lg sm:rounded-xl border border-border hover:border-gray-600/50 transition-all duration-200 gap-2"
                 >
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-xs sm:text-sm lg:text-base text-white mb-0.5 sm:mb-1 truncate">{apt.patientName}</h3>
-                    <p className="text-[10px] sm:text-xs lg:text-sm text-gray-400 truncate">
+                    <h3 className="font-semibold text-xs sm:text-sm lg:text-base text-foreground mb-0.5 sm:mb-1 truncate">{apt.patientName}</h3>
+                    <p className="text-[10px] sm:text-xs lg:text-sm text-muted truncate">
                       {new Date(apt.appointmentDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • {apt.timeSlot}
                     </p>
                   </div>

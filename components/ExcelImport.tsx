@@ -49,10 +49,10 @@ export default function ExcelImport({ onClose, onImport }: ExcelImportProps) {
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <div className="bg-[#1a1d27] rounded-2xl shadow-2xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto border border-gray-700/50" onClick={(e) => e.stopPropagation()}>
-        <div className="p-8 border-b border-gray-700/50 flex items-center justify-between">
-          <h2 className="text-2xl font-semibold text-white">Import Data</h2>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-700/50 transition-colors text-gray-400">
+      <div className="bg-card rounded-2xl shadow-2xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto border border-border" onClick={(e) => e.stopPropagation()}>
+        <div className="p-8 border-b border-border flex items-center justify-between">
+          <h2 className="text-2xl font-semibold text-foreground">Import Data</h2>
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-accent/50 transition-colors text-muted">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -61,46 +61,46 @@ export default function ExcelImport({ onClose, onImport }: ExcelImportProps) {
 
         <div className="p-8">
           <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">Import mode</label>
+            <label className="block text-sm font-medium text-foreground mb-2">Import mode</label>
             <div className="flex flex-wrap gap-2">
-              <button type="button" onClick={() => setMode('supabase')} className={`px-4 py-2 rounded-xl text-sm font-medium ${mode === 'supabase' ? 'bg-blue-600 text-white' : 'bg-gray-700/50 text-gray-400'}`}>
+              <button type="button" onClick={() => setMode('supabase')} className={`px-4 py-2 rounded-xl text-sm font-medium ${mode === 'supabase' ? 'bg-blue-600 text-white' : 'bg-gray-700/50 text-muted'}`}>
                 Supabase CSV (old data)
               </button>
-              <button type="button" onClick={() => setMode('migrate')} className={`px-4 py-2 rounded-xl text-sm font-medium ${mode === 'migrate' ? 'bg-blue-600 text-white' : 'bg-gray-700/50 text-gray-400'}`}>
+              <button type="button" onClick={() => setMode('migrate')} className={`px-4 py-2 rounded-xl text-sm font-medium ${mode === 'migrate' ? 'bg-blue-600 text-white' : 'bg-gray-700/50 text-muted'}`}>
                 Migration (Excel)
               </button>
-              <button type="button" onClick={() => setMode('patients')} className={`px-4 py-2 rounded-xl text-sm font-medium ${mode === 'patients' ? 'bg-blue-600 text-white' : 'bg-gray-700/50 text-gray-400'}`}>
+              <button type="button" onClick={() => setMode('patients')} className={`px-4 py-2 rounded-xl text-sm font-medium ${mode === 'patients' ? 'bg-blue-600 text-white' : 'bg-gray-700/50 text-muted'}`}>
                 Patients only (Excel)
               </button>
             </div>
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-300 mb-3">
+            <label className="block text-sm font-medium text-foreground mb-3">
               {mode === 'supabase' ? 'Select CSV or Excel file (.csv, .xlsx, .xls)' : 'Select Excel File (.xlsx, .xls)'}
             </label>
             <input
               type="file"
               accept={mode === 'supabase' ? '.csv,.xlsx,.xls' : '.xlsx,.xls'}
               onChange={handleFileChange}
-              className="w-full px-4 py-3 border-2 border-dashed border-gray-700/50 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 bg-[#242732] hover:bg-gray-700/30 cursor-pointer text-gray-300"
+              className="w-full px-4 py-3 border-2 border-dashed border-border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all duration-200 bg-accent hover:bg-gray-700/30 cursor-pointer text-foreground"
             />
             {mode === 'supabase' ? (
               <div className="mt-3 p-4 bg-amber-900/20 border border-amber-800/30 rounded-xl text-sm space-y-1">
                 <p className="font-medium text-amber-300">Supabase export format (CSV or Excel):</p>
-                <p className="text-gray-400">Columns: <strong className="text-gray-300">id</strong>, <strong className="text-gray-300">name</strong>, <strong className="text-gray-300">phone</strong>, birth_date, gender, condition, doctor_id, total_due, total_due_initial, email, created_at</p>
-                <p className="text-xs text-gray-500 mt-2">Keeps your old IDs. Maps total_due_initial → registration total, creates payment history.</p>
+                <p className="text-muted">Columns: <strong className="text-foreground">id</strong>, <strong className="text-foreground">name</strong>, <strong className="text-foreground">phone</strong>, birth_date, gender, condition, doctor_id, total_due, total_due_initial, email, created_at</p>
+                <p className="text-xs text-muted mt-2">Keeps your old IDs. Maps total_due_initial → registration total, creates payment history.</p>
               </div>
             ) : mode === 'migrate' ? (
               <div className="mt-3 p-4 bg-blue-900/20 border border-blue-800/30 rounded-xl text-sm space-y-1">
                 <p className="font-medium text-blue-300">Migration format (Name, Phone, Payment history):</p>
-                <p className="text-gray-400">Required: <strong className="text-gray-300">Name</strong>, <strong className="text-gray-300">Phone</strong></p>
-                <p className="text-gray-400">Optional: AmountPaid, TotalAmount, PaymentDate, PaymentMethod, Notes</p>
-                <p className="text-gray-400">Optional: Email, Gender, Address, DateOfBirth</p>
-                <p className="text-xs text-gray-500 mt-2">Multiple rows with same Name+Phone = multiple payments for that patient</p>
+                <p className="text-muted">Required: <strong className="text-foreground">Name</strong>, <strong className="text-foreground">Phone</strong></p>
+                <p className="text-muted">Optional: AmountPaid, TotalAmount, PaymentDate, PaymentMethod, Notes</p>
+                <p className="text-muted">Optional: Email, Gender, Address, DateOfBirth</p>
+                <p className="text-xs text-muted mt-2">Multiple rows with same Name+Phone = multiple payments for that patient</p>
               </div>
             ) : (
-              <p className="mt-3 text-sm text-gray-500">
+              <p className="mt-3 text-sm text-muted">
                 Columns: Name, Phone, (optional: Email, DateOfBirth, Gender, Address, MedicalHistory, Allergies)
               </p>
             )}
@@ -116,9 +116,9 @@ export default function ExcelImport({ onClose, onImport }: ExcelImportProps) {
                 {message.text}
               </div>
               {message.errors && message.errors.length > 0 && (
-                <details className="p-3 bg-[#242732] rounded-xl text-sm max-h-40 overflow-y-auto border border-gray-700/50">
-                  <summary className="cursor-pointer font-medium text-gray-300">View {message.errors.length} skipped rows</summary>
-                  <ul className="mt-2 text-gray-400 text-xs space-y-1">
+                <details className="p-3 bg-accent rounded-xl text-sm max-h-40 overflow-y-auto border border-border">
+                  <summary className="cursor-pointer font-medium text-foreground">View {message.errors.length} skipped rows</summary>
+                  <ul className="mt-2 text-muted text-xs space-y-1">
                     {message.errors.slice(0, 10).map((e, i) => (
                       <li key={i}>{e}</li>
                     ))}
@@ -130,7 +130,7 @@ export default function ExcelImport({ onClose, onImport }: ExcelImportProps) {
           )}
 
           <div className="flex gap-3">
-            <button onClick={onClose} className="flex-1 px-5 py-3 bg-[#242732] border border-gray-700/50 text-gray-300 rounded-xl hover:bg-gray-700/50 transition-all duration-200 font-medium">
+            <button onClick={onClose} className="flex-1 px-5 py-3 bg-accent border border-border text-foreground rounded-xl hover:bg-accent/50 transition-all duration-200 font-medium">
               Cancel
             </button>
             <button

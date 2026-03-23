@@ -44,8 +44,8 @@ export default function Appointments() {
     <div className="w-full max-w-7xl mx-auto">
       <div className="mb-3 sm:mb-4 lg:mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
         <div>
-          <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-white mb-1 sm:mb-2 tracking-tight">Appointments</h1>
-          <p className="text-gray-400 text-xs sm:text-sm lg:text-lg hidden sm:block">Schedule and manage appointments.</p>
+          <h1 className="text-lg sm:text-xl lg:text-4xl font-semibold text-foreground mb-1 sm:mb-2 tracking-tight">Appointments</h1>
+          <p className="text-muted text-xs sm:text-sm lg:text-lg hidden sm:block">Schedule and manage appointments.</p>
         </div>
         <button
           onClick={() => {
@@ -58,16 +58,16 @@ export default function Appointments() {
         </button>
       </div>
 
-      <div className="bg-[#1a1d27] rounded-2xl shadow-sm border border-gray-700/50 overflow-hidden">
-        <div className="p-4 lg:p-6 border-b border-gray-700/50">
-          <h2 className="text-lg lg:text-xl font-semibold text-white">All Appointments</h2>
+      <div className="bg-card rounded-2xl shadow-sm border border-border overflow-hidden">
+        <div className="p-4 lg:p-6 border-b border-border">
+          <h2 className="text-lg lg:text-xl font-semibold text-foreground">All Appointments</h2>
         </div>
         <div className="p-4 lg:p-6">
           {appointments.length === 0 ? (
             <div className="text-center py-12 lg:py-20">
               <div className="text-4xl lg:text-5xl mb-4">📅</div>
-              <h3 className="text-base lg:text-lg font-semibold text-white mb-2">No appointments yet</h3>
-              <p className="text-sm lg:text-base text-gray-400 mb-6">Schedule your first appointment to get started</p>
+              <h3 className="text-base lg:text-lg font-semibold text-foreground mb-2">No appointments yet</h3>
+              <p className="text-sm lg:text-base text-muted mb-6">Schedule your first appointment to get started</p>
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="px-4 lg:px-5 py-2 lg:py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-all duration-200 shadow-sm text-sm lg:text-base"
@@ -82,11 +82,11 @@ export default function Appointments() {
                 .map((apt) => (
                 <div
                   key={apt.id}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 lg:p-4 bg-[#242732] rounded-xl border border-gray-700/50 hover:border-gray-600/50 transition-all duration-200 gap-3"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 lg:p-4 bg-accent rounded-xl border border-border hover:border-gray-600/50 transition-all duration-200 gap-3"
                 >
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-sm lg:text-base text-white mb-1">{apt.patientName}</h3>
-                    <p className="text-xs lg:text-sm text-gray-400 mb-1">
+                    <h3 className="font-semibold text-sm lg:text-base text-foreground mb-1">{apt.patientName}</h3>
+                    <p className="text-xs lg:text-sm text-muted mb-1">
                       {new Date(apt.appointmentDate).toLocaleDateString('en-US', { 
                         weekday: 'short',
                         year: 'numeric', 
@@ -95,7 +95,7 @@ export default function Appointments() {
                       })} at {apt.timeSlot}
                     </p>
                     {apt.treatmentType && (
-                      <p className="text-xs lg:text-sm text-gray-500">Treatment: {apt.treatmentType}</p>
+                      <p className="text-xs lg:text-sm text-muted">Treatment: {apt.treatmentType}</p>
                     )}
                   </div>
                   <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
@@ -103,14 +103,14 @@ export default function Appointments() {
                       apt.status === 'scheduled' ? 'bg-blue-900/40 text-blue-300' :
                       apt.status === 'completed' ? 'bg-green-900/40 text-green-300' :
                       apt.status === 'cancelled' ? 'bg-red-900/40 text-red-300' :
-                      'bg-gray-700/50 text-gray-300'
+                      'bg-gray-700/50 text-foreground'
                     }`}>
                       {apt.status}
                     </span>
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(apt)}
-                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-700/50 transition-colors text-gray-400"
+                        className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-accent/50 transition-colors text-muted"
                         title="Edit"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

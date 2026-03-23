@@ -55,7 +55,7 @@ export default function Home() {
 
   return (
     <AuthGuard>
-      <div className="flex min-h-screen bg-[#0f1117]">
+      <div className="flex min-h-screen bg-background">
         <Sidebar 
           activeTab={activeTab} 
           setActiveTab={handleTabChange} 
@@ -65,12 +65,12 @@ export default function Home() {
         />
         <main className="flex-1 w-full lg:ml-64 transition-all duration-300">
           {/* Mobile Header */}
-          <div className="lg:hidden bg-[#1a1d27] border-b border-gray-700/50 px-3 py-2.5 sm:p-4 flex items-center justify-between sticky top-0 z-40 shadow-sm">
+          <div className="lg:hidden bg-card border-b border-border px-3 py-2.5 sm:p-4 flex items-center justify-between sticky top-0 z-40 shadow-sm">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-gray-700/50 transition-colors touch-manipulation"
+              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-accent/50 transition-colors touch-manipulation"
             >
-              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
@@ -78,7 +78,7 @@ export default function Home() {
               <div className="w-7 h-7 sm:w-8 sm:h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg sm:rounded-xl flex items-center justify-center text-white text-xs sm:text-sm font-semibold">
                 F
               </div>
-              <span className="text-base sm:text-lg font-semibold text-white">FOD Clinic</span>
+              <span className="text-base sm:text-lg font-semibold text-foreground">FOD Clinic</span>
             </div>
             <div className="w-9 sm:w-10"></div>
           </div>
