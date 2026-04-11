@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import imageCompression from 'browser-image-compression'
 
 interface Patient {
   _id: string
@@ -141,8 +142,21 @@ export default function Treatments() {
   }
 
   const uploadFile = async (file: File): Promise<string> => {
+    // Compress image first if it's large (bypasses Vercel 4.5MB free tier limit)
+    let finalFile = file;
+    try {
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+      finalFile = await imageCompression(file, options) as File;
+    } catch (e) {
+      console.log('Compression failed, using original file:', e);
+    }
+
     const fd = new FormData()
-    fd.append('file', file)
+    fd.append('file', finalFile)
     const res = await fetch('/api/upload', { method: 'POST', body: fd })
     if (!res.ok) throw new Error('Upload failed')
     const { url } = await res.json()
