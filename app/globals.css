@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #f8fafc;        /* Main Light background */
+    --card: #ffffff;              /* Light Cards/Sidebar */
+    --foreground: #0f172a;        /* Main Light text */
+    --muted: #64748b;             /* Light subdued text */
+    --border: #e2e8f0;            /* Light borders */
+    --accent: #f1f5f9;            /* Light hovers */
+  }
+
+  .dark {
+    --background: #0f1117;        /* Main Dark background */
+    --card: #151822;              /* Dark Cards/Sidebar */
+    --foreground: #f3f4f6;        /* Main Dark text */
+    --muted: #9ca3af;             /* Dark subdued text */
+    --border: rgba(55, 65, 81, 0.5); /* Dark borders */
+    --accent: rgba(31, 41, 55, 0.5); /* Dark hovers */
+  }
+}
+
+@layer base {
+  /* Dark scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #374151;
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #4b5563;
+  }
+
+  /* Dark form input styling */
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+
+  select option {
+    background-color: #1a1d27;
+    color: #e5e7eb;
+  }
+}
