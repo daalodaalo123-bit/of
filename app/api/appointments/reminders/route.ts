@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 3. Get patient details (phone numbers)
-    const patientIds = [...new Set(appointments.map((a: any) => a.patientId))]
+    const patientIds = Array.from(new Set(appointments.map((a: any) => a.patientId)))
     const patients = await Patient.find({ id: { $in: patientIds } }).lean()
     const patientMap = new Map(patients.map((p: any) => [p.id, p]))
 
