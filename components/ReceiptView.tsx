@@ -50,14 +50,21 @@ export default function ReceiptView({ payment, onClose }: ReceiptViewProps) {
 
   const handleWhatsAppReceipt = () => {
     const message = `Asc ${payment.patientName}, tani waa xaqiijin lacag-bixintaada oo dhan $${payment.amountPaid.toFixed(2)} oo aad u bixisay FOD Clinic maanta (${date}). Receipt #: ${payment.id}. Mahadsanid!`
-    let phone = payment.patientPhone?.trim().replace(/\s+/g, '') || ''
+    let phone = payment.patientPhone?.trim().replace(/\D/g, '') || ''
     if (!phone) {
       alert('Patient does not have a phone number saved.')
       return
     }
-    if (phone.startsWith('+')) phone = phone.substring(1)
-    if (phone.startsWith('0')) phone = '252' + phone.substring(1)
-    if (!phone.startsWith('252')) phone = '252' + phone
+
+    if (phone.startsWith('0')) {
+      phone = '252' + phone.substring(1)
+    } else if (phone.length === 7) {
+      phone = '25263' + phone // Assume Telesom if 7 digits
+    } else if (phone.length === 9 && (phone.startsWith('63') || phone.startsWith('65'))) {
+      phone = '252' + phone
+    } else if (!phone.startsWith('252') && phone.length >= 7) {
+      phone = '252' + phone
+    }
     
     const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
     window.open(url, '_blank')

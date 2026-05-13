@@ -71,10 +71,17 @@ export async function POST(request: NextRequest) {
       const message = `Asc ${patient.name}, tani waa xusuusin ka socota FOD Clinic. Waxaan kuu xasuusinaynaa ballantaada berri maadaama ay hal bil ka soo wareegtay booqashadii kuugu dambeysay. Mahadsanid!`
       
       // Format phone for WAWP (number@c.us)
-      let phone = patient.phone.trim().replace(/\s+/g, '')
-      if (phone.startsWith('+')) phone = phone.substring(1)
-      if (phone.startsWith('0')) phone = '252' + phone.substring(1)
-      if (!phone.startsWith('252')) phone = '252' + phone
+      let phone = patient.phone.trim().replace(/\D/g, '') // Keep only digits
+      
+      if (phone.startsWith('0')) {
+        phone = '252' + phone.substring(1)
+      } else if (phone.length === 7) {
+        phone = '25263' + phone // Assume Telesom if 7 digits
+      } else if (phone.length === 9 && (phone.startsWith('63') || phone.startsWith('65'))) {
+        phone = '252' + phone
+      } else if (!phone.startsWith('252') && phone.length >= 7) {
+        phone = '252' + phone
+      }
 
       try {
         const res = await fetch('https://api.wawp.net/v2/send/text', {

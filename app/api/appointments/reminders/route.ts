@@ -58,16 +58,18 @@ export async function POST(request: NextRequest) {
       const message = `Asc ${patient.name}, tani waa xusuusin ka socota FOD Clinic. Waxaan kuu xasuusinaynaa ballantaada berri (${apt.timeSlot}). Waan ku sugeynaa! Mahadsanid.`
       
       // Format phone number
-      let formattedPhone = patient.phone.trim()
-      if (!formattedPhone.startsWith('+')) {
-        if (formattedPhone.startsWith('252')) {
-          formattedPhone = '+' + formattedPhone
-        } else if (formattedPhone.startsWith('0')) {
-          formattedPhone = '+252' + formattedPhone.substring(1)
-        } else {
-          formattedPhone = '+252' + formattedPhone
-        }
+      let formattedPhone = patient.phone.trim().replace(/\D/g, '')
+      if (formattedPhone.startsWith('0')) {
+        formattedPhone = '252' + formattedPhone.substring(1)
+      } else if (formattedPhone.length === 7) {
+        formattedPhone = '25263' + formattedPhone
+      } else if (formattedPhone.length === 9 && (formattedPhone.startsWith('63') || formattedPhone.startsWith('65'))) {
+        formattedPhone = '252' + formattedPhone
+      } else if (!formattedPhone.startsWith('252') && formattedPhone.length >= 7) {
+        formattedPhone = '252' + formattedPhone
       }
+      formattedPhone = '+' + formattedPhone // Africa's Talking needs the +
+
 
       try {
         await sms.send({
