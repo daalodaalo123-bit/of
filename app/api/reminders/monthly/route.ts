@@ -27,29 +27,50 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'WAWP credentials not configured in .env.local' }, { status: 400 })
     }
 
-    // 1. Calculate the "Target Date" (1 month before tomorrow)
-    // If today is June 12, tomorrow is June 13.
-    // We want patients who registered/paid on May 13.
+    // 1. Determine the date range to check
+    // We want to check from (Last Sent Date + 1 month) until (Tomorrow)
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
-    
-    const targetDateStart = new Date(tomorrow)
-    targetDateStart.setMonth(targetDateStart.getMonth() - 1)
-    targetDateStart.setHours(0, 0, 0, 0)
-    
-    const targetDateEnd = new Date(targetDateStart)
-    targetDateEnd.setHours(23, 59, 59, 999)
+    tomorrow.setHours(23, 59, 59, 999)
 
-    console.log(`Searching for follow-ups from registration/payment date: ${targetDateStart.toDateString()}`)
+    const lastSentDoc = await Settings.findOne({ key: 'last_monthly_reminder_date' })
+    let startDate: Date
+    
+    if (lastSentDoc && lastSentDoc.value) {
+      // Start from the day after the last successful run
+      const lastDate = new Date(lastSentDoc.value)
+      lastDate.setDate(lastDate.getDate() + 1)
+      startDate = lastDate
+    } else {
+      // If never run before, just do today's target (1 month ago from tomorrow)
+      startDate = new Date()
+    }
+    
+    // We are looking for patients who registered/paid exactly 1 month before our range
+    const targetRangeStart = new Date(startDate)
+    targetRangeStart.setMonth(targetRangeStart.getMonth() - 1)
+    targetRangeStart.setHours(0, 0, 0, 0)
 
-    // 2. Find patients registered on that date
+    const targetRangeEnd = new Date(tomorrow)
+    targetRangeEnd.setMonth(targetRangeEnd.getMonth() - 1)
+    targetRangeEnd.setHours(23, 59, 59, 999)
+
+    if (force) {
+      // If forced, just do tomorrow's anniversary
+      targetRangeStart.setTime(targetRangeEnd.getTime())
+      targetRangeStart.setHours(0, 0, 0, 0)
+    }
+
+    console.log(`Searching for follow-ups between ${targetRangeStart.toDateString()} and ${targetRangeEnd.toDateString()}`)
+
+    // 2. Find patients registered in that range
     const patients = await Patient.find({
-      createdAt: { $gte: targetDateStart, $lte: targetDateEnd }
+      createdAt: { $gte: targetRangeStart, $lte: targetRangeEnd }
     }).lean()
 
-    // 3. Find payments made on that date
+    // 3. Find payments made in that range
     const payments = await Payment.find({
-      createdAt: { $gte: targetDateStart, $lte: targetDateEnd }
+      createdAt: { $gte: targetRangeStart, $lte: targetRangeEnd }
     }).lean()
 
     // 4. Combine unique patient IDs
@@ -101,6 +122,16 @@ export async function POST(request: NextRequest) {
           const errData = await res.json()
           console.error(`WAWP Error for ${patient.name}:`, errData)
           errorCount++
+          
+          // If we hit the free limit, stop the loop early
+          if (errData.message?.toLowerCase().includes('limit') || errData.error?.toLowerCase().includes('limit')) {
+            return NextResponse.json({
+              success: false,
+              message: `WAWP Free Limit Reached! Stopped after sending ${sentCount} messages. Please upgrade your WAWP plan or try again tomorrow.`,
+              sentCount,
+              errorCount
+            })
+          }
         }
       } catch (err) {
         console.error(`Fetch Error for ${patient.name}:`, err)
@@ -117,7 +148,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Checked for follow-ups from ${targetDateStart.toDateString()}. Sent ${sentCount} WhatsApp reminders. Errors: ${errorCount}`,
+      message: `Checked follow-ups for patients from ${targetRangeStart.toLocaleDateString()} to ${targetRangeEnd.toLocaleDateString()}. Sent ${sentCount} WhatsApp reminders. Errors: ${errorCount}`,
       sentCount,
       errorCount
     })

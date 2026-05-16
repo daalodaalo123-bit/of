@@ -9,25 +9,39 @@ export async function GET() {
   try {
     await connectDB()
 
-    // Target Date (1 month before tomorrow)
+    // Target Range (From Last Sent Date + 1 month until Tomorrow)
     const tomorrow = new Date()
     tomorrow.setDate(tomorrow.getDate() + 1)
-    
-    const targetDateStart = new Date(tomorrow)
-    targetDateStart.setMonth(targetDateStart.getMonth() - 1)
-    targetDateStart.setHours(0, 0, 0, 0)
-    
-    const targetDateEnd = new Date(targetDateStart)
-    targetDateEnd.setHours(23, 59, 59, 999)
+    tomorrow.setHours(23, 59, 59, 999)
 
-    // Find patients registered on that date
+    const Settings = (await import('../../../../models/Settings')).default
+    const lastSentDoc = await Settings.findOne({ key: 'last_monthly_reminder_date' })
+    let startDate: Date
+    
+    if (lastSentDoc && lastSentDoc.value) {
+      const lastDate = new Date(lastSentDoc.value)
+      lastDate.setDate(lastDate.getDate() + 1)
+      startDate = lastDate
+    } else {
+      startDate = new Date()
+    }
+    
+    const targetRangeStart = new Date(startDate)
+    targetRangeStart.setMonth(targetRangeStart.getMonth() - 1)
+    targetRangeStart.setHours(0, 0, 0, 0)
+
+    const targetRangeEnd = new Date(tomorrow)
+    targetRangeEnd.setMonth(targetRangeEnd.getMonth() - 1)
+    targetRangeEnd.setHours(23, 59, 59, 999)
+
+    // Find patients registered in that range
     const patients = await Patient.find({
-      createdAt: { $gte: targetDateStart, $lte: targetDateEnd }
+      createdAt: { $gte: targetRangeStart, $lte: targetRangeEnd }
     }).lean()
 
-    // Find payments made on that date
+    // Find payments made in that range
     const payments = await Payment.find({
-      createdAt: { $gte: targetDateStart, $lte: targetDateEnd }
+      createdAt: { $gte: targetRangeStart, $lte: targetRangeEnd }
     }).lean()
 
     const patientIds = new Set([
@@ -37,7 +51,7 @@ export async function GET() {
 
     return NextResponse.json({
       count: patientIds.size,
-      targetDate: targetDateStart.toLocaleDateString()
+      targetRange: `${targetRangeStart.toLocaleDateString()} - ${targetRangeEnd.toLocaleDateString()}`
     })
 
   } catch (error: any) {
